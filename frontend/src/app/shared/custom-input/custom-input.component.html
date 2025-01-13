@@ -1,0 +1,16 @@
+<div class="form-group">
+  <label
+    ><p>{{ label }}</p></label
+  >
+  <input
+    class="form-control"
+    [type]="type"
+    [value]="value"
+    [placeholder]="placeholder"
+    (input)="onInputChange($event)"
+    (blur)="onBlur()"
+  />
+  <p>
+    <small>{{ help }}</small>
+  </p>
+</div>

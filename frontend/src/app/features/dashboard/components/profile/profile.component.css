@@ -1,0 +1,26 @@
+.profile-content {
+  display: flex;
+}
+img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+}
+p {
+  margin: 0;
+}
+
+.part-2-p {
+  font-size: 0.6rem;
+}
+
+.btn {
+  padding: 0;
+}
+
+.file-upload-box {
+  border: 2px solid #6c757d;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+}

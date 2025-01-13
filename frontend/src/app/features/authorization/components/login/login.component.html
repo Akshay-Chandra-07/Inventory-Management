@@ -1,0 +1,74 @@
+<div class="container-fluid vh-100">
+  <div class="row h-100">
+    <div class="col-md-6 d-flex flex-column">
+      <div class="row">
+        <div class="col-12 py-2">
+          <h5>
+            <img
+              src="../../../../../assets/images/Group.svg"
+              alt=""
+              width="30px"
+              height="30px"
+            /><span><b> Inventory Management</b></span>
+          </h5>
+        </div>
+      </div>
+      <div class="row flex-grow-1">
+        <div
+          class="col-12 d-flex flex-column justify-content-center align-items-center"
+        >
+          <form
+            [formGroup]="loginForm"
+            class="col-md-6"
+            (ngSubmit)="onLoginSubmit()"
+          >
+            <div class="align-self-start">
+              <h4>Log in</h4>
+              <p><small>Welcome back! Please enter your details</small></p>
+            </div>
+            <app-custom-input
+              type="email"
+              label="Email"
+              placeholder="Enter your email"
+              formControlName="email"
+            ></app-custom-input>
+            <app-custom-input
+              type="password"
+              label="Password"
+              placeholder="••••••••"
+              formControlName="password"
+            ></app-custom-input>
+            <div class="d-grid text-center">
+              <button class="btn btn-primary">Sign in</button>
+              <p>
+                <small
+                  ><small
+                    >Don't have an account?
+                    <a routerLink="/auth/signup" style="text-decoration: none"
+                      >Sign up</a
+                    ></small
+                  ></small
+                >
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 py-2">
+          <span
+            ><small><small>©Inventory Management 2025</small></small></span
+          >
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 p-0 h-100">
+      <img
+        src="../../../../../assets/images/login image.png"
+        class="img-fluid h-100 w-100 object-fit-cover"
+        style="object-fit: cover"
+        alt=""
+      />
+    </div>
+  </div>
+</div>

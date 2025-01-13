@@ -1,0 +1,38 @@
+<div class="container-fluid p-0">
+  <div class="row my-2 px-4">Files uploaded</div>
+  <div class="row">
+    <div class="d-flex my-1">
+      <button class="col-5 btn btn-outline-dark py-1 mx-1">
+        <small>Download all</small>
+      </button>
+      <button class="col-5 btn btn-primary py-0 mx-1">
+        <small>Upload</small>
+      </button>
+    </div>
+  </div>
+  <table class="table table-striped my-1">
+    <thead>
+      <tr>
+        <td class="col-1"><input type="checkbox" /></td>
+        <td class="col">File name</td>
+      </tr>
+    </thead>
+    <tbody class="table-striped">
+      <tr *ngFor="let data of filesTableData" class="m-0">
+        <td><input type="checkbox" /></td>
+        <td>
+          <div class="d-flex">
+            <div class="my-1 py-1">
+              <img src="../../../../../assets/images/Group.svg" alt="" />
+            </div>
+            <div class="d-flex flex-column mx-2">
+              <p class="p-0 m-0 small">{{ data.name }}</p>
+              <p class="p-0 m-0 small">{{ data.size }}</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="row"></div>
+</div>

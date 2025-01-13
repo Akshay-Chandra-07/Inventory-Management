@@ -1,0 +1,122 @@
+<!-- <div class="container-md">
+  <form [formGroup]="signUpForm" (ngSubmit)="onSignUpSubmit()">
+    <app-custom-input
+      label="First Name"
+      type="text"
+      placeholder="Enter your first name"
+      formControlName="firstName"
+    ></app-custom-input>
+    <app-custom-input
+      label="Last Name*"
+      type="text"
+      placeholder="Enter your last name"
+      formControlName="lastName"
+    ></app-custom-input>
+    <app-custom-input
+      label="Email*"
+      type="email"
+      placeholder="Enter your email"
+      formControlName="email"
+    ></app-custom-input>
+    <app-custom-input
+      label="Password*"
+      type="password"
+      placeholder="Create a password"
+      formControlName="password"
+      aria-describedby="passwordHelp"
+    ></app-custom-input>
+    <div id="passwordHelp" class="form-text">Must be at least 8 characters</div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div> -->
+
+<div class="container-fluid vh-100">
+  <div class="row h-100">
+    <div class="col-md-6 d-flex flex-column">
+      <div class="row">
+        <div class="col-12 py-2">
+          <h5>
+            <img
+              src="../../../../../assets/images/Group.svg"
+              alt=""
+              width="30px"
+              height="30px"
+            /><span><b> Inventory Management</b></span>
+          </h5>
+        </div>
+      </div>
+      <div class="row flex-grow-1">
+        <div
+          class="col-12 d-flex flex-column justify-content-center align-items-center"
+        >
+          <form
+            [formGroup]="signUpForm"
+            class="col-md-6"
+            (ngSubmit)="onSignUpSubmit()"
+          >
+            <div class="align-self-start">
+              <h4>Sign up</h4>
+              <p><small>Start your journey today!</small></p>
+            </div>
+            <app-custom-input
+              label="First Name*"
+              type="text"
+              placeholder="Enter your first name"
+              formControlName="firstName"
+            ></app-custom-input>
+            <app-custom-input
+              label="Last Name*"
+              type="text"
+              placeholder="Enter your last name"
+              formControlName="lastName"
+            ></app-custom-input>
+            <app-custom-input
+              label="Email*"
+              type="email"
+              placeholder="Enter your email"
+              formControlName="email"
+            ></app-custom-input>
+            <div>
+              <app-custom-input
+                label="Password*"
+                type="password"
+                placeholder="Create a password"
+                formControlName="password"
+                help="Must be at least 8 characters"
+              ></app-custom-input>
+            </div>
+            <div class="d-grid text-center">
+              <button class="btn btn-primary">Create account</button>
+              <p>
+                <small
+                  ><small
+                    >Already have an account?
+                    <a routerLink="/auth/login" style="text-decoration: none"
+                      >Log in</a
+                    ></small
+                  ></small
+                >
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 py-2">
+          <span
+            ><small><small>©Inventory Management 2025</small></small></span
+          >
+          <span><small></small></span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 p-0 h-100">
+      <img
+        src="../../../../../assets/images/login image.png"
+        class="img-fluid h-100 w-100 object-fit-cover"
+        style="object-fit: cover"
+        alt=""
+      />
+    </div>
+  </div>
+</div>

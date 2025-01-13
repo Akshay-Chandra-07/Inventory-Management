@@ -1,0 +1,109 @@
+<div class="dropdown">
+  <button
+    class="btn btn-none"
+    type="button"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    <div class="profile-content">
+      <div class="part-1">
+        <img
+          [src]="'../../../../../assets/images/Group.svg'"
+          alt="profile pic"
+        />
+      </div>
+      <div class="part-2">
+        <p class="part-2-p">
+          <b>{{ name }}</b>
+        </p>
+        <p class="part-2-p">{{ email }}</p>
+      </div>
+    </div>
+  </button>
+  <ul class="dropdown-menu">
+    <li>
+      <p class="dropdown-item dropdown-username">{{ username }}</p>
+    </li>
+    <li>
+      <a
+        class="dropdown-item"
+        data-bs-toggle="modal"
+        data-bs-target="#staticBackdrop"
+        (click)="changeProfilePic()"
+        >Change profile pic</a
+      >
+    </li>
+    <li><a class="dropdown-item" (click)="onLogout()">Log out</a></li>
+  </ul>
+</div>
+
+<div
+  class="modal modal-sm fade"
+  id="staticBackdrop"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <h5 class="modal-title pt-4 ps-4" id="fileUploadModalLabel">
+        Upload File
+      </h5>
+      <div class="modal-body">
+        <div class="container">
+          <div class="file-upload-box py-3" id="fileUploadBox">
+            
+            <form [formGroup]="uploadProfilePic">
+              <!-- <label for="">
+                <input
+                type="file"
+                formControlName="profilePic"
+                (click)="onFiles($event)"
+                accept=".jpeg,.jpg,.png"
+                style="visibility: hidden;"
+              />
+              </label> -->
+              <label class="w-100" style="cursor: pointer;">
+                <input
+                  type="file"
+                  formControlName="profilePic"
+                  (click)="onFiles($event)"
+                  accept=".jpeg,.jpg,.png"
+                  style="visibility: hidden"
+                  class="position-absolute"
+                />
+                <div>
+                <img src="../../../../../assets/logos/cloud-arrow-up.svg" alt="" />
+                <p class="small text-muted">JPEG, SVG, PNG</p>
+                <p class="small text-muted">
+                  <span><b>click to upload</b></span> or drag and drop
+                </p> 
+                </div>
+              </label>
+            </form>
+          </div>
+          <div class="d-flex justify-content-around mt-1">
+            <button
+              type="button"
+              class="btn btn-secondary px-2 py-1"
+              data-bs-dismiss="modal"
+              (click)="cancel()"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary px-2 py-1"
+              [disabled]="!uploadProfilePic.controls.profilePic.value"
+              (click)="onSubmitProfilePic()"
+            >
+              Upload
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
