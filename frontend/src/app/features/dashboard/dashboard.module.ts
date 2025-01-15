@@ -10,6 +10,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
+
 @NgModule({
   declarations: [
     NavbarComponent,
@@ -22,7 +23,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     CommonModule,
     DashboardRoutingModule,
     SharedModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule
   ],
+  providers: [
+  ]
 })
 export class DashboardModule {}

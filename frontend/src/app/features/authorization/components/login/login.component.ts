@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { LoginService } from '../../services/login.service';
+import { Subject, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -7,7 +10,9 @@ import { FormControl, FormGroup } from '@angular/forms';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  constructor() {}
+
+  destroy$ = new Subject<void>()
+  constructor(private loginService:LoginService,private router:Router) {}
 
   ngOnInit(): void {}
 
@@ -17,6 +22,17 @@ export class LoginComponent implements OnInit {
   });
 
   onLoginSubmit() {
+    this.loginService.loginUser(this.loginForm.controls.email.value!,this.loginForm.controls.password.value!).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(data:any)=>{
+        console.log(data);
+        sessionStorage.setItem('accesstoken',data.accessToken!)
+        sessionStorage.setItem('refreshtoken',data.refreshToken!)
+        this.router.navigateByUrl('/dashboard/home')
+      },
+      error(error){
+        console.log(error);
+      }
+    })
     console.log(this.loginForm);
   }
 }

@@ -8,6 +8,9 @@ class AuthService {
         const hashedPassword = await bcrypt.hash(password,10)
         return hashedPassword
     }
+    static async comparePassword(password,databasePassword){
+        return await bcrypt.compare(password,databasePassword)
+    }
 }
 
 module.exports = AuthService

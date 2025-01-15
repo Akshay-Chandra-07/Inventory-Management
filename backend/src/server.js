@@ -2,9 +2,9 @@ const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv').config({path:"./src/.env"})
 require('./mysql/db')
-// app.use(cors('http://localhost:4200'));
 
 const app = express()
+app.use(cors('http://localhost:4200'));
 app.use(express.json())
 
 

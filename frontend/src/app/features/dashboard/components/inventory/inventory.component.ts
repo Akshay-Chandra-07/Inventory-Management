@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { InventoryService } from '../../services/inventory.service';
 
 @Component({
   selector: 'app-inventory',
@@ -6,42 +7,52 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./inventory.component.css'],
 })
 export class InventoryComponent implements OnInit {
-  inventoryData: any = [
-    {
-      name: 'Maggie',
-      status: 'Available',
-      category: 'food',
-      vendors: ['swiggy', 'zomato', 'zepto'],
-      quantity: 200,
-      unit: 'grams',
-    },
-    {
-      name: 'Maggie',
-      status: 'Sold Out',
-      category: 'food',
-      vendors: ['swiggy', 'zomato', 'zepto', 'blinkit'],
-      quantity: 200,
-      unit: 'grams',
-    },
-    {
-      name: 'Maggie',
-      status: 'Sold Out',
-      category: 'food',
-      vendors: ['swiggy', 'zomato', 'zepto', 'blinkit'],
-      quantity: 200,
-      unit: 'grams',
-    },
-    {
-      name: 'Maggie',
-      status: 'Sold Out',
-      category: 'food',
-      vendors: ['swiggy', 'zomato', 'zepto', 'blinkit'],
-      quantity: 200,
-      unit: 'grams',
-    },
-  ];
+  pageNumber : number = 1;
+  pageCount : number = 10;
+  productCount : number = 0;
+  inventoryData: any ;
 
-  constructor() {}
+  constructor(private inventoryService:InventoryService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.fetchProductCount()
+    this.fetchPageProducts()
+  }
+
+  onPageNext(){
+    console.log("next")
+    this.pageNumber += 1;
+    this.fetchPageProducts()
+  }
+
+  onPagePrevious(){
+    console.log("previous")
+    this.pageNumber -= 1;
+    this.fetchPageProducts()
+  }
+
+
+
+  fetchProductCount(){
+    this.inventoryService.getProductCount().pipe().subscribe({
+      next:(data:any)=>{
+        this.productCount = data
+        console.log(this.productCount)
+      },error(error:any){
+        console.log(error)
+      }
+    })
+  }
+
+  fetchPageProducts(){
+    this.inventoryService.getPageProducts(this.pageNumber,this.pageCount).pipe().subscribe({
+      next:(data:any)=>{
+        console.log(data)
+        this.inventoryData = data.cleanedProducts
+        console.log(this.inventoryData)
+      },error(error){
+        console.log(error)
+      }
+    })
+  }
 }
