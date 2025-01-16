@@ -10,9 +10,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-
-  destroy$ = new Subject<void>()
-  constructor(private loginService:LoginService,private router:Router) {}
+  destroy$ = new Subject<void>();
+  constructor(
+    private loginService: LoginService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {}
 
@@ -22,17 +24,19 @@ export class LoginComponent implements OnInit {
   });
 
   onLoginSubmit() {
-    this.loginService.loginUser(this.loginForm.controls.email.value!,this.loginForm.controls.password.value!).pipe(takeUntil(this.destroy$)).subscribe({
-      next:(data:any)=>{
-        console.log(data);
-        sessionStorage.setItem('accesstoken',data.accessToken!)
-        sessionStorage.setItem('refreshtoken',data.refreshToken!)
-        this.router.navigateByUrl('/dashboard/home')
-      },
-      error(error){
-        console.log(error);
-      }
-    })
-    console.log(this.loginForm);
+    this.loginService
+      .loginUser(
+        this.loginForm.controls.email.value!,
+        this.loginForm.controls.password.value!,
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: any) => {
+          sessionStorage.setItem('accesstoken', data.accessToken!);
+          sessionStorage.setItem('refreshtoken', data.refreshToken!);
+          this.router.navigateByUrl('/dashboard/home');
+        },
+        error(error) {},
+      });
   }
 }

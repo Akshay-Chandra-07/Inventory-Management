@@ -1,0 +1,173 @@
+<div class="container-fluid d-flex flex-column">
+  <div class="row">
+    <div class="pt-3 px-3">
+      <h6>Cart</h6>
+    </div>
+  </div>
+  <div class="row">
+    <div class="container-fluid d-flex justify-content-between m-2">
+      <div>
+        <button
+          class="btn btn-sm btn-outline-dark custom-btn-1"
+          (click)="changeToInventoryComponent()"
+        >
+          View all
+        </button>
+        <button class="btn btn-sm btn-outline-dark custom-btn-2 status-grey">
+          Cart
+        </button>
+      </div>
+      <div class="col-5 d-flex mx-2">
+        <input
+          class="form-control form-control-sm mr-sm-2"
+          type="search"
+          placeholder="Search"
+        />
+        <button class="btn btn-sm btn-outline-dark d-flex ms-1">
+          <img
+            src="../../../../../assets/logos/filter.svg"
+            class="mt-1"
+            alt=""
+          />Filter
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row d-flex flex-grow-1">
+    <table class="table">
+      <thead class="table-light border">
+        <tr class="">
+          <th><input type="checkbox" /></th>
+          <td class="col-3"><p class="table-head-p">Product Name</p></td>
+          <td>
+            <p class="table-head-p">Category <img src="" alt="" /></p>
+          </td>
+          <td><p class="table-head-p">Quantity</p></td>
+          <td><p class="table-head-p"></p></td>
+          <td><p class="table-head-p"></p></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of cartData | keyvalue; let i = index">
+          <td><input type="checkbox" /></td>
+          <td>
+            <div class="d-flex">
+              <img
+                *ngIf="data.value.product_image"
+                [src]="data.value.product_image"
+                alt=""
+                width="10px"
+                height="10px"
+              />
+              <img
+                *ngIf="!data.value.product_image"
+                src="../../../../../assets/images/Group.svg"
+                alt=""
+                width="20px"
+                height="20px"
+              />
+              <p class="ps-2 py-0 text-small">
+                {{ data.value.product_name }}
+              </p>
+            </div>
+          </td>
+          <td>
+            <p class="ps-2 py-0 text-small">{{ data.value.category_name }}</p>
+          </td>
+          <td *ngIf="data.value.vendors.length <= 3">
+            <div
+              *ngFor="let vendor of data.value.vendors; let i = index"
+              class="d-inline-flex"
+            >
+              <p class="status status-green px-2 py-1 ms-1">
+                {{ vendor.vendor_name | json }}
+              </p>
+            </div>
+          </td>
+          <td *ngIf="data.value.vendors.length > 3">
+            <div class="d-inline-flex">
+              <p class="status status-green px-2 py-1 ms-1">
+                {{ data.value.vendors[0].vendor_name | json }}
+              </p>
+              <p class="status status-green px-2 py-1 ms-1">
+                {{ data.value.vendors[1].vendor_name | json }}
+              </p>
+              <p class="status status-green px-2 py-1 ms-1">
+                {{ data.value.vendors[2].vendor_name | json }}
+              </p>
+              <p class="status status-grey px-2 py-1 ms-1">
+                +{{ data.value.vendors.length - 3 }}
+              </p>
+            </div>
+          </td>
+          <td>
+            <button
+              class="btn btn-sm btn-outline-secondary rounded"
+              (click)="
+                decreaseMoveToCartProduct(data.key, data.value.product_id)
+              "
+              [disabled]="data.value.quantity == 1"
+            >
+              -
+            </button>
+            {{ data.value.quantity }}
+            <button
+              (click)="
+                increaseMoveToCartProduct(data.key, data.value.product_id)
+              "
+              class="btn btn-sm btn-outline-secondary rounded"
+              [disabled]="data.value.quantity == data.value.quantity_in_stock"
+            >
+              +
+            </button>
+          </td>
+          <td>
+            <button
+              class="btn btn-sm btn-outline-secondary"
+              (click)="deleteFromTempcartData(i, data.value.product_id)"
+            >
+              <img src="../../../../../assets/logos/delete-logo.svg" alt="" />
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- <div class="row">
+      <div>
+        <ul class="pagination pagination-sm justify-content-between">
+          <li class="page-item">
+            <button
+              class="page-link btn"
+              [disabled]="pageNumber == 1"
+              (click)="onPagePrevious()"
+            >
+              <img
+                src="../../../../../assets/logos/arrow-left.svg"
+                alt=""
+                class="mb-1"
+              />
+              Previous
+            </button>
+          </li>
+  
+          <li class="page-item">
+            <button
+              class="page-link btn"
+              [disabled]="pageNumber == lastPage"
+              (click)="onPageNext()"
+            >
+              Next
+              <img
+                src="../../../../../assets/logos/arrow-right.svg"
+                alt=""
+                class="mb-1"
+              />
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div> -->
+</div>

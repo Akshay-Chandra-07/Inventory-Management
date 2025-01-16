@@ -18,7 +18,29 @@ export class CustomDropdownComponent implements OnInit {
   onTouch: any = () => {};
   onChange: any = () => {};
   @Input() options: any = [];
+  @Input() label: string = '';
+  @Input() placeholder: string = '';
   constructor() {}
 
   ngOnInit(): void {}
+
+  writeValue(value: any) {
+    this.value = value;
+    this.onChange(this.value);
+    this.onTouch();
+  }
+
+  registerOnChange(fn: any) {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any) {
+    this.onTouch = fn;
+  }
+
+  onInput(event: any) {
+    this.value = event.target.value;
+    this.onChange(this.value);
+    this.onTouch();
+  }
 }

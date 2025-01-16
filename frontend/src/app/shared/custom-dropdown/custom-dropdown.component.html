@@ -1,1 +1,11 @@
-<p>custom-dropdown works!</p>
+<div class="input-group d-flex flex-column">
+  <label class=""
+    ><p class="my-0">{{ label }}</p></label
+  >
+  <select (change)="onInput($event)" class="form-select w-100 mb-3 rounded">
+    <option selected>{{ placeholder }}</option>
+    <option *ngFor="let data of options; let i = index" [value]="data">
+      {{ data }}
+    </option>
+  </select>
+</div>

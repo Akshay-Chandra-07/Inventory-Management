@@ -6,7 +6,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./main.component.css'],
 })
 export class MainComponent implements OnInit {
+  toggleComponents: boolean = true;
+
   constructor() {}
 
   ngOnInit(): void {}
+
+  onToggle(event: Event) {
+    console.log(event);
+
+    this.toggleComponents = !this.toggleComponents;
+  }
 }

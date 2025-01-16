@@ -1,15 +1,16 @@
-const {Model} = require('objection')
-const Knex = require('knex')
-const knexfile = require('./knexfile')
+const { Model } = require("objection");
+const Knex = require("knex");
+const knexfile = require("./knexfile");
 
-const db = Knex(knexfile)
-Model.knex(db)
+const db = Knex(knexfile);
+Model.knex(db);
 
-db.raw('select 1+1').then(()=>{
+db.raw("select 1+1")
+  .then(() => {
     console.log("Connected to database");
-}).catch((err)=>{
-    console.log("Error connecting to database",err);
-    
-})
+  })
+  .catch((err) => {
+    console.log("Error connecting to database", err);
+  });
 
-module.exports = db
+module.exports = db;

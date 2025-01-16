@@ -16,7 +16,10 @@ export class ProfileComponent implements OnInit {
   // email: string = 'akshaybandi202@gmail.com';
   image: string = '../../../../../assets/images/Group.svg';
 
-  constructor(private router:Router,private profileService:ProfileService) {}
+  constructor(
+    private router: Router,
+    private profileService: ProfileService,
+  ) {}
 
   ngOnInit(): void {
     this.fetchUser();
@@ -27,35 +30,39 @@ export class ProfileComponent implements OnInit {
   });
 
   fetchUser() {
-    this.profileService.getUserData().pipe().subscribe({
-      next:(data:any)=>{
-        console.log(data)
-        this.userData = data.user[0]
-        this.name = this.userData.first_name +" "+ this.userData.last_name
-      },error(error){
-        console.log(error);
-      }
-    })
+    this.profileService
+      .getUserData()
+      .pipe()
+      .subscribe({
+        next: (data: any) => {
+          console.log(data);
+          this.userData = data.user[0];
+          this.name = this.userData.first_name + ' ' + this.userData.last_name;
+        },
+        error(error) {
+          console.log(error);
+        },
+      });
   }
 
   changeProfilePic() {}
 
   onLogout() {
-    sessionStorage.removeItem('accesstoken')
-    sessionStorage.removeItem('refreshtoken')
-    this.router.navigateByUrl('/auth/login')
+    sessionStorage.removeItem('accesstoken');
+    sessionStorage.removeItem('refreshtoken');
+    this.router.navigateByUrl('/auth/login');
   }
 
   onFiles(event: Event) {
     const input = event.target as HTMLInputElement;
-    if(input.files){
-      this.profileImage = input.files[0]
+    if (input.files) {
+      this.profileImage = input.files[0];
     }
   }
 
   onSubmitProfilePic() {
     const fileName = this.profileImage.name.replace(/\s+/g, '');
-    const fileType = this.profileImage.type
+    const fileType = this.profileImage.type;
 
     // this.profileService.uploadProfilePicture(this.profileImage!).subscribe({
     //   next:(data:any)=>{
@@ -67,28 +74,37 @@ export class ProfileComponent implements OnInit {
     //   }
     // })
 
-    this.profileService.getPresignedUrl(fileName,fileType).pipe().subscribe({
-      next:(data1:any)=>{
-        this.profileService.uploadToUrl(this.profileImage,data1.url).pipe().subscribe({
-          next:(data2:any)=>{
-            const url = "https://akv-interns.s3.ap-south-1.amazonaws.com/"+data1.fileKey
-            console.log(url)
-            this.profileService.uploadProfileUrlToServer(url).subscribe({
-              next:(data3:any)=>{
-                console.log(data3)
-                this.fetchUser();
-              },error(error){
-                console.log(error)
-              }
-            })
-          },error(error){
-            console.log(error)
-          }
-        })
-      },error(error){
-        console.log(error)
-      }
-    })
+    this.profileService
+      .getPresignedUrl(fileName, fileType)
+      .pipe()
+      .subscribe({
+        next: (data1: any) => {
+          this.profileService
+            .uploadToUrl(this.profileImage, data1.url)
+            .pipe()
+            .subscribe({
+              next: (data2: any) => {
+                const url = data1.fileKey;
+                console.log(url);
+                this.profileService.uploadProfileUrlToServer(url).subscribe({
+                  next: (data3: any) => {
+                    console.log(data3);
+                    this.fetchUser();
+                  },
+                  error(error) {
+                    console.log(error);
+                  },
+                });
+              },
+              error(error) {
+                console.log(error);
+              },
+            });
+        },
+        error(error) {
+          console.log(error);
+        },
+      });
   }
 
   cancel() {

@@ -3,13 +3,23 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SignupService {
-  apiUrl = environment.apiUrl
-  constructor(private _http : HttpClient) { }
+  apiUrl = environment.apiUrl;
+  constructor(private _http: HttpClient) {}
 
-  registerUser(first_name:string,last_name:string,email:string,password:string){
-    return this._http.post(`${this.apiUrl}/auth/signup`,{first_name,last_name,email,password})
+  registerUser(
+    first_name: string,
+    last_name: string,
+    email: string,
+    password: string,
+  ) {
+    return this._http.post(`${this.apiUrl}/auth/signup`, {
+      first_name,
+      last_name,
+      email,
+      password,
+    });
   }
 }

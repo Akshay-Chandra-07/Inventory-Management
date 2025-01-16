@@ -2,7 +2,7 @@ class ProductsService {
   static async cleanProducts(rawProducts) {
     let cleanedProducts = rawProducts.reduce((resultant, product) => {
       const p = resultant.find(
-        (cleanedProducts) => cleanedProducts.product_id === product.product_id
+        (cleanedProducts) => cleanedProducts.product_id === product.product_id,
       );
       if (!p) {
         resultant.push({
@@ -31,5 +31,4 @@ class ProductsService {
   }
 }
 
-
-module.exports = ProductsService
+module.exports = ProductsService;

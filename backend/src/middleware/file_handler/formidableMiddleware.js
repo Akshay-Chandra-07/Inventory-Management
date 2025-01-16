@@ -1,4 +1,4 @@
-const formidable = require('formidable');
+const formidable = require("formidable");
 
 const parseForm = () => (req, res, next) => {
   const form = new formidable.IncomingForm();

@@ -1,13 +1,13 @@
-const {Model} = require('objection')
+const { Model } = require("objection");
 
-class Vendors extends Model{
-    static get tableName(){
-        return 'vendors'
-    }
+class Vendors extends Model {
+  static get tableName() {
+    return "vendors";
+  }
 
-    static get idColumn(){
-        return 'vendor_id'
-    }
+  static get idColumn() {
+    return "vendor_id";
+  }
 }
 
-module.exports = Vendors
+module.exports = Vendors;

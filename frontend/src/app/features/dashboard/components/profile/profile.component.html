@@ -8,15 +8,15 @@
     <div class="profile-content">
       <div class="part-1">
         <div *ngIf="userData">
-          <img [src]="userData.profile_pic" alt="">
+          <img [src]="userData.profile_pic" alt="" />
         </div>
-        <div *ngIf="!userData" >
-          <img [src]="image" alt="">
+        <div *ngIf="!userData">
+          <img [src]="image" alt="" />
         </div>
       </div>
       <div class="part-2">
         <p class="part-2-p">
-          <b>{{name}}</b>
+          <b>{{ name }}</b>
         </p>
         <p *ngIf="userData" class="part-2-p">{{ userData.email }}</p>
       </div>
@@ -24,7 +24,9 @@
   </button>
   <ul class="dropdown-menu">
     <li>
-      <p *ngIf="userData" class="dropdown-item dropdown-username">{{ userData.username }}</p>
+      <p *ngIf="userData" class="dropdown-item dropdown-username">
+        {{ userData.username }}
+      </p>
     </li>
     <li>
       <a
@@ -57,7 +59,7 @@
         <div class="container">
           <div class="file-upload-box py-3" id="fileUploadBox">
             <form [formGroup]="uploadProfilePic">
-              <label style="cursor: pointer;">
+              <label style="cursor: pointer">
                 <input
                   type="file"
                   formControlName="profilePic"
@@ -67,11 +69,14 @@
                   class="position-absolute"
                 />
                 <div>
-                <img src="../../../../../assets/logos/cloud-arrow-up.svg" alt="" />
-                <p class="small text-muted">JPEG, SVG, PNG</p>
-                <p class="small text-muted">
-                  <span><b>click to upload</b></span> or drag and drop
-                </p> 
+                  <img
+                    src="../../../../../assets/logos/cloud-arrow-up.svg"
+                    alt=""
+                  />
+                  <p class="small text-muted">JPEG, SVG, PNG</p>
+                  <p class="small text-muted">
+                    <span><b>click to upload</b></span> or drag and drop
+                  </p>
                 </div>
               </label>
             </form>

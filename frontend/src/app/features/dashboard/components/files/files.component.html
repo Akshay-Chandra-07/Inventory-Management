@@ -5,8 +5,11 @@
       <button class="col-5 btn btn-outline-dark py-1 mx-1">
         <small>Download all</small>
       </button>
-      <button class="col-5 btn btn-primary py-0 mx-1" data-bs-toggle="modal"
-      data-bs-target="#fileUploadModal">
+      <button
+        class="col-5 btn btn-primary py-0 mx-1"
+        data-bs-toggle="modal"
+        data-bs-target="#fileUploadModal"
+      >
         <small>Upload</small>
       </button>
     </div>
@@ -19,6 +22,12 @@
       </tr>
     </thead>
     <tbody class="table-striped">
+      <div *ngIf="!filesTableData">
+        <td></td>
+        <td>
+          <p><b>No files Uploaded</b></p>
+        </td>
+      </div>
       <tr *ngFor="let data of filesTableData" class="m-0">
         <td><input type="checkbox" /></td>
         <td>
@@ -27,8 +36,10 @@
               <img src="../../../../../assets/images/Group.svg" alt="" />
             </div>
             <div class="d-flex flex-column mx-2">
-              <p class="p-0 m-0 small">{{ data.name }}</p>
-              <p class="p-0 m-0 small">{{ data.size }}</p>
+              <p class="p-0 m-0 small">{{ data.file_name }}</p>
+              <p class="p-0 m-0 small">
+                {{ data.file_size / 1024 | number: "1.0-0" }} Kb
+              </p>
             </div>
           </div>
         </td>
@@ -38,7 +49,13 @@
   <div class="row"></div>
 </div>
 
-<div class="modal modal-sm fade" id="fileUploadModal" tabindex="-1" aria-labelledby="fileUploadModalLabel" aria-hidden="true">
+<div
+  class="modal modal-sm fade"
+  id="fileUploadModal"
+  tabindex="-1"
+  aria-labelledby="fileUploadModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -48,21 +65,23 @@
         <div class="container">
           <div class="file-upload-box py-3" id="fileUploadBox">
             <form [formGroup]="uploadUserFiles">
-              <label class="w-100" style="cursor: pointer;">
+              <label class="w-100" style="cursor: pointer">
                 <input
                   type="file"
                   formControlName="inputFiles"
                   (change)="onFiles($event)"
-                  multiple
                   accept=".jpeg,.jpg,.png,.pdf"
                   class="position-absolute"
                 />
                 <div>
-                <img src="../../../../../assets/logos/cloud-arrow-up.svg" alt="" />
-                <p class="small text-muted">JPEG, SVG, PNG</p>
-                <p class="small text-muted">
-                  <span><b>click to upload</b></span> or drag and drop
-                </p> 
+                  <img
+                    src="../../../../../assets/logos/cloud-arrow-up.svg"
+                    alt=""
+                  />
+                  <p class="small text-muted">JPEG, SVG, PNG</p>
+                  <p class="small text-muted">
+                    <span><b>click to upload</b></span> or drag and drop
+                  </p>
                 </div>
               </label>
             </form>

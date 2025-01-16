@@ -5,10 +5,23 @@
         <h6>Inventory vendors</h6>
       </div>
       <div>
-        <button class="btn btn-sm btn-outline-dark">Move to cart</button>
+        <button
+          class="btn btn-sm btn-outline-dark"
+          data-bs-toggle="modal"
+          data-bs-target="#moveToCartModal"
+          (click)="onMoveToCart()"
+        >
+          Move to cart
+        </button>
         <button class="btn btn-sm btn-outline-dark ms-1">Download all</button>
         <button class="btn btn-sm btn-outline-dark ms-1">Import</button>
-        <button class="btn btn-sm btn-primary ms-1">+ Add product</button>
+        <button
+          class="btn btn-sm btn-primary ms-1"
+          data-bs-toggle="modal"
+          data-bs-target="#addProductModal"
+        >
+          + Add product
+        </button>
       </div>
     </div>
   </div>
@@ -18,7 +31,12 @@
         <button class="btn btn-sm btn-outline-dark custom-btn-1 status-grey">
           View all
         </button>
-        <button class="btn btn-sm btn-outline-dark custom-btn-2">Cart</button>
+        <button
+          class="btn btn-sm btn-outline-dark custom-btn-2"
+          (click)="changeToCartComponent()"
+        >
+          Cart
+        </button>
       </div>
       <div class="col-5 d-flex mx-2">
         <input
@@ -55,7 +73,26 @@
       </thead>
       <tbody>
         <tr *ngFor="let data of inventoryData; let i = index">
-          <td><input type="checkbox" /></td>
+          <div *ngIf="productsInCart">
+            <td *ngIf="!productsInCart[data.product_id]">
+              <input
+                type="checkbox"
+                (change)="onChangeCheckbox(i, data.product_id)"
+                [disabled]="data.quantity_in_stock == 0"
+                [checked]="moveToCartData?.[data.product_id]"
+              />
+            </td>
+          </div>
+          <div *ngIf="!productsInCart">
+            <td>
+              <input
+                type="checkbox"
+                (change)="onChangeCheckbox(i, data.product_id)"
+                [disabled]="data.quantity_in_stock == 0"
+                [checked]="moveToCartData?.[data.product_id]"
+              />
+            </td>
+          </div>
           <td>
             <div class="d-flex">
               <img
@@ -65,23 +102,51 @@
                 width="20px"
                 height="20px"
               />
-              <img *ngIf="!data.product_image" src="../../../../../assets/images/Group.svg" alt="">
+              <img
+                *ngIf="!data.product_image"
+                src="../../../../../assets/images/Group.svg"
+                alt=""
+              />
               <p class="ps-2">{{ data.product_name }}</p>
             </div>
           </td>
           <td>
-            <p
-              *ngIf="data.quantity_in_stock>0"
-              class="status status-green px-2 py-1"
-            >
-              • Available
-            </p>
-            <p
-              *ngIf="data.quantity_in_stock==0"
-              class="status status-grey px-2 py-1"
-            >
-              • Sold out
-            </p>
+            <div *ngIf="productsInCart">
+              <p
+                *ngIf="productsInCart[data.product_id]"
+                class="status status-grey px-2 py-1"
+              >
+                • In cart
+              </p>
+              <div *ngIf="!productsInCart[data.product_id]">
+                <p
+                  *ngIf="data.quantity_in_stock > 0"
+                  class="status status-green px-2 py-1"
+                >
+                  • Available
+                </p>
+                <p
+                  *ngIf="data.quantity_in_stock == 0"
+                  class="status status-grey px-2 py-1"
+                >
+                  • Sold out
+                </p>
+              </div>
+            </div>
+            <div *ngIf="!productsInCart">
+              <p
+                *ngIf="data.quantity_in_stock > 0"
+                class="status status-green px-2 py-1"
+              >
+                • Available
+              </p>
+              <p
+                *ngIf="data.quantity_in_stock == 0"
+                class="status status-grey px-2 py-1"
+              >
+                • Sold out
+              </p>
+            </div>
           </td>
           <td>
             <p>{{ data.category_name }}</p>
@@ -91,19 +156,21 @@
               *ngFor="let vendor of data.vendors; let i = index"
               class="d-inline-flex"
             >
-              <p class="status status-green px-2 py-1 ms-1">{{ vendor.vendor_name | json}}</p>
+              <p class="status status-green px-2 py-1 ms-1">
+                {{ vendor.vendor_name | json }}
+              </p>
             </div>
           </td>
           <td *ngIf="data.vendors.length > 3">
             <div class="d-inline-flex">
               <p class="status status-green px-2 py-1 ms-1">
-                {{ data.vendors.vendor_name[0] |json}}
+                {{ data.vendors.vendor_name[0] | json }}
               </p>
               <p class="status status-green px-2 py-1 ms-1">
-                {{ data.vendors.vendor_name[1] |json}}
+                {{ data.vendors.vendor_name[1] | json }}
               </p>
               <p class="status status-green px-2 py-1 ms-1">
-                {{ data.vendors.vendor_name[2] |json}}
+                {{ data.vendors.vendor_name[2] | json }}
               </p>
               <p class="status status-grey px-2 py-1 ms-1">
                 +{{ data.vendors.length - 3 }}
@@ -139,26 +206,289 @@
     <div>
       <ul class="pagination pagination-sm justify-content-between">
         <li class="page-item">
-          <button class="page-link btn" [disabled]="pageNumber==1" (click)="onPagePrevious()"
-            ><img
+          <button
+            class="page-link btn"
+            [disabled]="pageNumber == 1"
+            (click)="onPagePrevious()"
+          >
+            <img
               src="../../../../../assets/logos/arrow-left.svg"
               alt=""
               class="mb-1"
             />
-            Previous</button
-          >
+            Previous
+          </button>
         </li>
-        
+
         <li class="page-item">
-          <button class="page-link btn" [disabled]="pageNumber == (productCount/pageCount)" (click)="onPageNext()"
-            >Next
+          <button
+            class="page-link btn"
+            [disabled]="pageNumber == lastPage"
+            (click)="onPageNext()"
+          >
+            Next
             <img
               src="../../../../../assets/logos/arrow-right.svg"
               alt=""
               class="mb-1"
-          /></button>
+            />
+          </button>
         </li>
       </ul>
+    </div>
+  </div>
+</div>
+
+<!--------------------- Add Product Modal ------------------------>
+
+<div
+  class="modal modal-sm fade"
+  id="addProductModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="addProductModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addProductModalLabel">Add product</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="addProductForm">
+          <app-custom-input
+            label="Product Name"
+            placeholder="Enter Product Name"
+            formControlName="productName"
+          ></app-custom-input>
+          <app-custom-dropdown
+            label="Category"
+            [options]="categories"
+            placeholder="Select category"
+            formControlName="category"
+          ></app-custom-dropdown>
+          <app-custom-dropdown
+            label="Vendor"
+            [options]="vendors"
+            placeholder="Select vendor"
+            formControlName="vendor"
+          ></app-custom-dropdown>
+          <app-custom-input
+            label="Quantity in stock"
+            placeholder="Enter quantity"
+            formControlName="quantity"
+          ></app-custom-input>
+          <app-custom-input
+            label="Unit"
+            placeholder="Enter unit measure"
+            formControlName="unit"
+          ></app-custom-input>
+          <app-custom-input
+            label="Unit Price"
+            placeholder="Enter unit price"
+            formControlName="unitPrice"
+          ></app-custom-input>
+          <label
+            style="cursor: pointer"
+            class="border rounded w-100 p-5 text-center"
+          >
+            <input
+              type="file"
+              formControlName="productImage"
+              (change)="onFiles($event)"
+              accept=".jpeg,.jpg,.png"
+              style="visibility: hidden"
+              class="position-absolute"
+            />
+            <div>
+              <img
+                src="../../../../../assets/logos/cloud-arrow-up.svg"
+                alt=""
+                width="20"
+                height="20"
+              />
+              <p class="small text-muted">JPEG, SVG, PNG</p>
+              <p class="small text-muted">
+                <span><b>click to upload</b></span> or drag and drop
+              </p>
+            </div>
+          </label>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          (click)="onAddProductFormSubmit()"
+        >
+          Add product
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--------------------- Move to cart Modal ------------------------->
+
+<div
+  class="modal modal-lg fade"
+  id="moveToCartModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="moveToCartModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="moveToCartModalLabel">Move to cart</h1>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="moveToCartData">
+          <table class="table">
+            <thead class="table-light border">
+              <tr class="">
+                <th><input type="checkbox" /></th>
+                <td class="col-3"><p class="table-head-p">Product Name</p></td>
+                <td>
+                  <p class="table-head-p">Category <img src="" alt="" /></p>
+                </td>
+                <td><p class="table-head-p">Quantity</p></td>
+                <td><p class="table-head-p"></p></td>
+                <td><p class="table-head-p"></p></td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of moveToCartData | keyvalue; let i = index">
+                <td>
+                  <input
+                    type="checkbox"
+                    (change)="onChangeModalCheckbox(i, data.value.product_id)"
+                  />
+                </td>
+                <td>
+                  <div class="d-flex">
+                    <img
+                      *ngIf="data.value.product_image"
+                      [src]="data.value.product_image"
+                      alt=""
+                      width="10px"
+                      height="10px"
+                    />
+                    <img
+                      *ngIf="!data.value.product_image"
+                      src="../../../../../assets/images/Group.svg"
+                      alt=""
+                      width="20px"
+                      height="20px"
+                    />
+                    <p class="ps-2 py-0 text-small">
+                      {{ data.value.product_name }}
+                    </p>
+                  </div>
+                </td>
+                <td>
+                  <p class="ps-2 py-0 text-small">
+                    {{ data.value.category_name }}
+                  </p>
+                </td>
+                <td *ngIf="data.value.vendors.length <= 3">
+                  <div
+                    *ngFor="let vendor of data.value.vendors; let i = index"
+                    class="d-inline-flex"
+                  >
+                    <p class="status status-green px-2 py-1 ms-1">
+                      {{ vendor.vendor_name | json }}
+                    </p>
+                  </div>
+                </td>
+                <td *ngIf="data.value.vendors.length > 3">
+                  <div class="d-inline-flex">
+                    <p class="status status-green px-2 py-1 ms-1">
+                      {{ data.value.vendors[0].vendor_name | json }}
+                    </p>
+                    <p class="status status-green px-2 py-1 ms-1">
+                      {{ data.value.vendors[1].vendor_name | json }}
+                    </p>
+                    <p class="status status-green px-2 py-1 ms-1">
+                      {{ data.value.vendors[2].vendor_name | json }}
+                    </p>
+                    <p class="status status-grey px-2 py-1 ms-1">
+                      +{{ data.value.vendors.length - 3 }}
+                    </p>
+                  </div>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-outline-secondary rounded"
+                    (click)="
+                      decreaseMoveToCartProduct(data.key, data.value.product_id)
+                    "
+                    [disabled]="data.value.quantity == 1"
+                  >
+                    -
+                  </button>
+                  {{ data.value.quantity }}
+                  <button
+                    (click)="
+                      increaseMoveToCartProduct(data.key, data.value.product_id)
+                    "
+                    class="btn btn-sm btn-outline-secondary rounded"
+                    [disabled]="
+                      data.value.quantity == data.value.quantity_in_stock
+                    "
+                  >
+                    +
+                  </button>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    (click)="deleteFromTempcartData(i, data.value.product_id)"
+                  >
+                    <img
+                      src="../../../../../assets/logos/delete-logo.svg"
+                      alt=""
+                    />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="!moveToCartData">
+          <p><b>No data to move to cart</b></p>
+        </div>
+      </div>
+      <div class="modal-footer d-flex justify-content-evenly">
+        <button
+          type="button"
+          class="btn btn-secondary col-3"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary col-3"
+          data-bs-dismiss="modal"
+          (click)="onMoveToFinalCart()"
+        >
+          Move
+        </button>
+      </div>
     </div>
   </div>
 </div>

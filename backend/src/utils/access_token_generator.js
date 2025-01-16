@@ -1,5 +1,7 @@
-const jwt = require('jsonwebtoken')
+const jwt = require("jsonwebtoken");
 
-exports.accessTokenGenerator = async (id)=>{
-    return jwt.sign({id:id},process.env.JWT_TOKENSECRETKEY, {expiresIn:process.env.TOKEN_TIME})
-}
+exports.accessTokenGenerator = (id) => {
+  return jwt.sign({ id: id }, process.env.JWT_TOKENSECRETKEY, {
+    expiresIn: process.env.TOKEN_TIME,
+  });
+};

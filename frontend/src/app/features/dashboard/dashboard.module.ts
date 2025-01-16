@@ -9,7 +9,7 @@ import { MainComponent } from './components/main/main.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { CartComponent } from './components/cart/cart.component';
 
 @NgModule({
   declarations: [
@@ -18,14 +18,14 @@ import { ReactiveFormsModule } from '@angular/forms';
     InventoryComponent,
     MainComponent,
     ProfileComponent,
+    CartComponent,
   ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
     SharedModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
-  providers: [
-  ]
+  providers: [],
 })
 export class DashboardModule {}
