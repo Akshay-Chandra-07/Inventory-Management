@@ -19,6 +19,7 @@ exports.getUrl = async (req, res, next) => {
 exports.updateUrlToDb = async (req, res, next) => {
   const profilePictureUrl = process.env.s3_URL + req.body.url;
   const userId = req.userId;
+  console.log(profilePictureUrl, userId);
   try {
     const result = await userQueries.uploadProfilePicture(
       profilePictureUrl,

@@ -8,7 +8,7 @@ class AuthQueries {
 
   static async register(first_name, last_name, email, username, password) {
     try {
-      await Users.query(db).insert({
+      await db("users").insert({
         first_name,
         last_name,
         email,
@@ -23,7 +23,7 @@ class AuthQueries {
   }
 
   static async checkCredentials(user) {
-    return await Users.query(db)
+    return await db("users")
       .select("user_id", "username", "email", "password")
       .where("email", "=", user)
       .orWhere("username", "=", user);

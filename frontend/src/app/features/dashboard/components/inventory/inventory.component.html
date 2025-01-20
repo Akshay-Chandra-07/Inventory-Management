@@ -13,8 +13,19 @@
         >
           Move to cart
         </button>
-        <button class="btn btn-sm btn-outline-dark ms-1">Download all</button>
-        <button class="btn btn-sm btn-outline-dark ms-1">Import</button>
+        <button
+          class="btn btn-sm btn-outline-dark ms-1"
+          (click)="downloadExcel()"
+        >
+          Download all
+        </button>
+        <button
+          class="btn btn-sm btn-outline-dark ms-1"
+          data-bs-toggle="modal"
+          data-bs-target="#importFileModal"
+        >
+          Import
+        </button>
         <button
           class="btn btn-sm btn-primary ms-1"
           data-bs-toggle="modal"
@@ -39,18 +50,52 @@
         </button>
       </div>
       <div class="col-5 d-flex mx-2">
-        <input
-          class="form-control form-control-sm mr-sm-2"
-          type="search"
-          placeholder="Search"
-        />
-        <button class="btn btn-sm btn-outline-dark d-flex ms-1">
-          <img
-            src="../../../../../assets/logos/filter.svg"
-            class="mt-1"
-            alt=""
-          />Filter
-        </button>
+        <form [formGroup]="searchForm" class="w-100">
+          <input
+            class="form-control form-control-sm mr-sm-2"
+            type="search"
+            formControlName="inputValue"
+            (keyup)="onSearch($event)"
+            placeholder="Search"
+          />
+        </form>
+        <div class="dropdown">
+          <button
+            class="btn dropdown-toggle border"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <img src="../../../../../assets/logos/filter.svg" alt="" />
+            Filter
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <input
+                type="checkbox"
+                class="btn ms-2"
+                (click)="onAddSearchFilter('ProductName')"
+              />
+              Product Name
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                class="btn ms-2"
+                (click)="onAddSearchFilter('Category')"
+              />
+              Category
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                class="btn ms-2"
+                (click)="onAddSearchFilter('Vendor')"
+              />
+              Vendor
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -164,13 +209,13 @@
           <td *ngIf="data.vendors.length > 3">
             <div class="d-inline-flex">
               <p class="status status-green px-2 py-1 ms-1">
-                {{ data.vendors.vendor_name[0] | json }}
+                {{ data.vendors[0].vendor_name | json }}
               </p>
               <p class="status status-green px-2 py-1 ms-1">
-                {{ data.vendors.vendor_name[1] | json }}
+                {{ data.vendors[1].vendor_name | json }}
               </p>
               <p class="status status-green px-2 py-1 ms-1">
-                {{ data.vendors.vendor_name[2] | json }}
+                {{ data.vendors[2].vendor_name | json }}
               </p>
               <p class="status status-grey px-2 py-1 ms-1">
                 +{{ data.vendors.length - 3 }}
@@ -187,14 +232,19 @@
             <img
               class="btn px-1"
               src="../../../../../assets/logos/download-logo.svg"
+              (click)="onDownloadRow(data)"
             />
             <img
               class="btn px-1"
               src="../../../../../assets/logos/edit-logo.svg"
+              data-bs-toggle="modal"
+              data-bs-target="#editProductModal"
+              (click)="onEditingProduct(data)"
             />
             <img
               class="btn px-1"
               src="../../../../../assets/logos/delete-logo.svg"
+              (click)="onDeleteProduct(data.product_id)"
             />
           </td>
         </tr>
@@ -274,12 +324,60 @@
             placeholder="Select category"
             formControlName="category"
           ></app-custom-dropdown>
-          <app-custom-dropdown
-            label="Vendor"
-            [options]="vendors"
-            placeholder="Select vendor"
-            formControlName="vendor"
-          ></app-custom-dropdown>
+          <!-- <div>
+            <label for="">Vendor</label>
+            <select (change)="selectVendor($event)">
+              <option *ngFor="let vendor of vendors;let i = index" [value]="vendor.name" [selected]="vendor.selected" class="btn">{{vendor.name}}</option>
+            </select>
+            <div class="d-flex w-100 border" *ngFor="let vendor of vendors">
+              <caption class="text-small" *ngIf="vendor.selected">{{vendor.name}}<button class="btn btn-sm btn-secondary">x</button></caption>
+            </div>
+          </div> -->
+          <div class="w-100">
+            <label for="">Vendor</label>
+            <div class="dropdown w-100">
+              <button
+                class="btn border dropdown-toggle"
+                type="button"
+                id="vendor-select"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Choose Vendor
+              </button>
+              <ul class="dropdown-menu w-100" aria-labelledby="vendor-select">
+                <li class="w-100" *ngFor="let vendor of vendors; let i = index">
+                  <a
+                    class="dropdown-item w-100"
+                    (click)="toggleVendorSelection(i)"
+                  >
+                    {{ vendor.name }}
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class="mt-3">
+              <div class="d-flex flex-wrap">
+                <div
+                  *ngFor="let vendor of vendors; let i = index"
+                  class="me-2 mb-2"
+                >
+                  <span
+                    *ngIf="vendor.selected"
+                    class="border p-1 rounded text-small status-grey"
+                  >
+                    {{ vendor.name }}
+                    <button
+                      class="btn btn-sm"
+                      (click)="toggleVendorSelection(i)"
+                    >
+                      x
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
           <app-custom-input
             label="Quantity in stock"
             placeholder="Enter quantity"
@@ -333,6 +431,163 @@
           (click)="onAddProductFormSubmit()"
         >
           Add product
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-----------------------Edit Product Modal------------------------->
+
+<div
+  class="modal modal-sm fade"
+  id="editProductModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="editProductModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="editProductModalLabel">
+          Edit product
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="closingEditModal()"
+        ></button>
+      </div>
+      <div *ngIf="editingData">
+        <div class="modal-body">
+          <form [formGroup]="addProductForm">
+            <app-custom-input
+              label="Product Name"
+              [placeholder]="editingData.product_name"
+              [value]="editingData.product_name"
+              formControlName="productName"
+            ></app-custom-input>
+            <app-custom-dropdown
+              label="Category"
+              [options]="categories"
+              [placeholder]="editingData.category_name"
+              [value]="editingData.category_name"
+              formControlName="category"
+            ></app-custom-dropdown>
+            <div class="w-100">
+              <label for="">Vendor</label>
+              <div class="dropdown w-100">
+                <button
+                  class="btn border dropdown-toggle"
+                  type="button"
+                  id="vendor-select"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Choose Vendor
+                </button>
+                <ul class="dropdown-menu w-100" aria-labelledby="vendor-select">
+                  <li
+                    class="w-100"
+                    *ngFor="let vendor of vendors; let i = index"
+                  >
+                    <a
+                      class="dropdown-item w-100"
+                      (click)="toggleVendorSelection(i)"
+                    >
+                      {{ vendor.name }}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="mt-3">
+                <div class="d-flex flex-wrap">
+                  <div
+                    *ngFor="let vendor of vendors; let i = index"
+                    class="me-2 mb-2"
+                  >
+                    <span
+                      *ngIf="vendor.selected"
+                      class="border p-1 rounded text-small status-grey"
+                    >
+                      {{ vendor.name }}
+                      <button
+                        class="btn btn-sm"
+                        (click)="toggleVendorSelection(i)"
+                      >
+                        x
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <app-custom-input
+              label="Quantity in stock"
+              [placeholder]="editingData.quantity_in_stock"
+              [value]="editingData.quantity_in_stock"
+              formControlName="quantity"
+            ></app-custom-input>
+            <app-custom-input
+              label="Unit"
+              [placeholder]="editingData.unit"
+              [value]="editingData.unit"
+              formControlName="unit"
+            ></app-custom-input>
+            <app-custom-input
+              label="Unit Price"
+              [placeholder]="editingData.unitPrice"
+              [value]="editingData.unitPrice"
+              formControlName="unitPrice"
+            ></app-custom-input>
+            <label
+              style="cursor: pointer"
+              class="border rounded w-100 p-5 text-center"
+            >
+              <input
+                type="file"
+                formControlName="productImage"
+                (change)="onFiles($event)"
+                accept=".jpeg,.jpg,.png"
+                style="visibility: hidden"
+                class="position-absolute"
+              />
+              <div>
+                <img
+                  src="../../../../../assets/logos/cloud-arrow-up.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                />
+                <p class="small text-muted">JPEG, SVG, PNG</p>
+                <p class="small text-muted">
+                  <span><b>click to upload</b></span> or drag and drop
+                </p>
+              </div>
+            </label>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="closingEditModal()"
+        >
+          Close
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          (click)="updateProductFormSubmit()"
+        >
+          Submit
         </button>
       </div>
     </div>
@@ -487,6 +742,74 @@
           (click)="onMoveToFinalCart()"
         >
           Move
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!---------------------- Import File Modal -------------------------->
+
+<div
+  class="modal modal-sm fade"
+  id="importFileModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="importFileModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="importFileModalLabel">Select File</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="addProductForm">
+          <label
+            style="cursor: pointer"
+            class="border rounded w-100 p-5 text-center"
+          >
+            <input
+              type="file"
+              formControlName="productImage"
+              (change)="onFiles($event)"
+              accept=".jpeg,.jpg,.png"
+              style="visibility: hidden"
+              class="position-absolute"
+            />
+            <div>
+              <img
+                src="../../../../../assets/logos/cloud-arrow-up.svg"
+                alt=""
+                width="20"
+                height="20"
+              />
+              <p class="small text-muted">.xlsx</p>
+              <p class="small text-muted">
+                <span><b>click to upload</b></span> or drag and drop
+              </p>
+            </div>
+          </label>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          (click)="onImportFile()"
+        >
+          Import Products
         </button>
       </div>
     </div>

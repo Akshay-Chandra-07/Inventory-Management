@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
+import { catchError, of } from 'rxjs';
+import { NgToastService } from 'ng-angular-popup';
 
 @Component({
   selector: 'app-profile',
@@ -19,6 +21,7 @@ export class ProfileComponent implements OnInit {
   constructor(
     private router: Router,
     private profileService: ProfileService,
+    private toast: NgToastService,
   ) {}
 
   ngOnInit(): void {
@@ -32,7 +35,14 @@ export class ProfileComponent implements OnInit {
   fetchUser() {
     this.profileService
       .getUserData()
-      .pipe()
+      .pipe(
+        catchError((error) => {
+          console.log(error);
+          sessionStorage.clear();
+          this.router.navigateByUrl('auth/login');
+          return of();
+        }),
+      )
       .subscribe({
         next: (data: any) => {
           console.log(data);
@@ -44,8 +54,6 @@ export class ProfileComponent implements OnInit {
         },
       });
   }
-
-  changeProfilePic() {}
 
   onLogout() {
     sessionStorage.removeItem('accesstoken');
@@ -64,16 +72,6 @@ export class ProfileComponent implements OnInit {
     const fileName = this.profileImage.name.replace(/\s+/g, '');
     const fileType = this.profileImage.type;
 
-    // this.profileService.uploadProfilePicture(this.profileImage!).subscribe({
-    //   next:(data:any)=>{
-    //     console.log(data);
-    //     this.fetchUser();
-    //   },
-    //   error(error){
-    //     console.log(error);
-    //   }
-    // })
-
     this.profileService
       .getPresignedUrl(fileName, fileType)
       .pipe()
@@ -89,10 +87,12 @@ export class ProfileComponent implements OnInit {
                 this.profileService.uploadProfileUrlToServer(url).subscribe({
                   next: (data3: any) => {
                     console.log(data3);
+                    this.toast.success({ detail: data3.msg });
                     this.fetchUser();
                   },
-                  error(error) {
+                  error: (error) => {
                     console.log(error);
+                    this.toast.error({ detail: error.error.msg });
                   },
                 });
               },

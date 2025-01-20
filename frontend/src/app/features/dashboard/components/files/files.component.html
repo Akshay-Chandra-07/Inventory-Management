@@ -2,8 +2,11 @@
   <div class="row my-2 px-4">Files uploaded</div>
   <div class="row">
     <div class="d-flex my-1">
-      <button class="col-5 btn btn-outline-dark py-1 mx-1">
-        <small>Download all</small>
+      <button
+        class="col-5 btn btn-outline-dark py-1 mx-1"
+        (click)="downloadZip()"
+      >
+        <small>Download</small>
       </button>
       <button
         class="col-5 btn btn-primary py-0 mx-1"
@@ -29,7 +32,13 @@
         </td>
       </div>
       <tr *ngFor="let data of filesTableData" class="m-0">
-        <td><input type="checkbox" /></td>
+        <td>
+          <input
+            type="checkbox"
+            [checked]="this.selectedFiles[data.file_id]"
+            (change)="onSelectFile(data)"
+          />
+        </td>
         <td>
           <div class="d-flex">
             <div class="my-1 py-1">

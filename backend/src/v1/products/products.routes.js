@@ -21,10 +21,34 @@ router.post(
   validateToken,
   productController.insertProductData,
 );
+
+router.put(
+  "/update-product-data-in-db",
+  validateToken,
+  productController.updateProductData,
+);
+
 router.patch(
   "/insert-image-url-to-product-db",
   validateToken,
   productController.insertProductUrlToTable,
+);
+router.patch(
+  "/delete-single-product",
+  validateToken,
+  productController.deleteSingleProduct,
+);
+
+router.patch(
+  "/update-quantity",
+  validateToken,
+  productController.updateQuantityInTable,
+);
+
+router.post(
+  "/insert-excel-products",
+  validateToken,
+  productController.insertExcelProducts,
 );
 
 module.exports = router;

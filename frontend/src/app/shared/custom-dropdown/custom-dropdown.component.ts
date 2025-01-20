@@ -14,7 +14,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
   ],
 })
 export class CustomDropdownComponent implements OnInit {
-  value: any = '';
+  @Input() value: any = '';
   onTouch: any = () => {};
   onChange: any = () => {};
   @Input() options: any = [];

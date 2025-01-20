@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SignupService } from '../../services/signup.service';
+import { NgToastService } from 'ng-angular-popup';
 
 @Component({
   selector: 'app-signup',
@@ -12,9 +13,12 @@ export class SignupComponent implements OnInit {
   constructor(
     private router: Router,
     private signupService: SignupService,
+    private toast: NgToastService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    sessionStorage.clear();
+  }
 
   signUpForm = new FormGroup({
     firstName: new FormControl(''),
@@ -41,13 +45,12 @@ export class SignupComponent implements OnInit {
       .pipe()
       .subscribe({
         next: (data: any) => {
-          console.log(data.msg);
+          this.toast.success({ detail: data.msg, duration: 2000 });
           this.router.navigateByUrl('/auth/login');
         },
-        error(error) {
-          console.log(error);
+        error: (error) => {
+          this.toast.error({ detail: error.error.msg, duration: 2000 });
         },
       });
-    console.log(this.signUpForm);
   }
 }

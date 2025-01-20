@@ -13,6 +13,9 @@ class CategoriesQueries {
       return;
     }
   }
+  static async getAllCategories() {
+    return await db("categories").select("category_name");
+  }
 }
 
 module.exports = CategoriesQueries;

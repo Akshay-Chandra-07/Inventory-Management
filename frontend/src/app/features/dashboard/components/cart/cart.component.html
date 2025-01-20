@@ -38,7 +38,6 @@
     <table class="table">
       <thead class="table-light border">
         <tr class="">
-          <th><input type="checkbox" /></th>
           <td class="col-3"><p class="table-head-p">Product Name</p></td>
           <td>
             <p class="table-head-p">Category <img src="" alt="" /></p>
@@ -50,7 +49,6 @@
       </thead>
       <tbody>
         <tr *ngFor="let data of cartData | keyvalue; let i = index">
-          <td><input type="checkbox" /></td>
           <td>
             <div class="d-flex">
               <img
@@ -104,18 +102,14 @@
           <td>
             <button
               class="btn btn-sm btn-outline-secondary rounded"
-              (click)="
-                decreaseMoveToCartProduct(data.key, data.value.product_id)
-              "
+              (click)="decreaseCartProduct(data.key, data.value.product_id)"
               [disabled]="data.value.quantity == 1"
             >
               -
             </button>
             {{ data.value.quantity }}
             <button
-              (click)="
-                increaseMoveToCartProduct(data.key, data.value.product_id)
-              "
+              (click)="increaseCartProduct(data.key, data.value.product_id)"
               class="btn btn-sm btn-outline-secondary rounded"
               [disabled]="data.value.quantity == data.value.quantity_in_stock"
             >

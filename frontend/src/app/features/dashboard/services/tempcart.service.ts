@@ -1,4 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -7,7 +9,8 @@ export class TempcartService {
   tempCartData: any;
   preFinalCartData: any;
   finalCartData: any;
-  constructor() {}
+  apiUrl = environment.apiUrl;
+  constructor(private _http: HttpClient) {}
 
   fetchTempcartData() {
     return this.tempCartData;
@@ -27,35 +30,49 @@ export class TempcartService {
   }
 
   modifyPreFinalCart(pId: any, data: any) {
+    if (!this.preFinalCartData) {
+      this.preFinalCartData = {};
+    }
     if (!this.finalCartData) {
       this.finalCartData = {};
     }
     if (this.finalCartData[pId]) {
+      delete this.preFinalCartData[pId];
       delete this.finalCartData[pId];
     } else {
       this.finalCartData[pId] = data;
+      this.preFinalCartData[pId] = data;
       console.log(this.finalCartData);
+      console.log(this.preFinalCartData);
     }
   }
 
-  // sendDataToFinalCart(){
-  //   // if(this.finalCartData[0]){
-  //   //   this.finalCartData[0].push(this.preFinalCartData)
-  //   // }else{
-  //   // }
-  //   // this.finalCartData.push(...Object.values(this.preFinalCartData))
-
-  //   if(!this.finalCartData){
-  //     this.finalCartData = {}
+  // modifyProductQuantity(){
+  //   if(this.preFinalCartData){
+  //     for(let key of Object.keys(this.preFinalCartData)){
+  //       console.log(this.preFinalCartData[key]['quantity'])
+  //       const newQuantity = this.preFinalCartData[key]['quantity_in_stock']-this.preFinalCartData[key]['quantity']
+  //       this._http.patch(`${this.apiUrl}/products/update-quantity`,newQuantity).pipe().subscribe()
+  //     }
   //   }
-  //   this.finalCartData[pId] = data
-  //   this.preFinalCartData = undefined
-  //   this.tempCartData = undefined
-  //   console.log(this.finalCartData)
   // }
 
+  modifyQuantityInDb(p_id: string, newQuantity: number) {
+    return this._http.patch(`${this.apiUrl}/products/update-quantity`, {
+      p_id,
+      newQuantity,
+    });
+  }
+
+  getPreFinalCartData() {
+    return this.preFinalCartData;
+  }
+
   getCartData() {
+    if (this.finalCartData) {
+      localStorage.setItem('cart', JSON.stringify(this.finalCartData));
+    }
     this.tempCartData = undefined;
-    return this.finalCartData;
+    this.preFinalCartData = undefined;
   }
 }

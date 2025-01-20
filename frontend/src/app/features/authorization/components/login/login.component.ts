@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { LoginService } from '../../services/login.service';
 import { Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
+import { NgToastService } from 'ng-angular-popup';
 
 @Component({
   selector: 'app-login',
@@ -10,13 +11,17 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
+  message: any;
   destroy$ = new Subject<void>();
   constructor(
     private loginService: LoginService,
     private router: Router,
+    private toast: NgToastService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    sessionStorage.clear();
+  }
 
   loginForm = new FormGroup({
     email: new FormControl(''),
@@ -34,9 +39,12 @@ export class LoginComponent implements OnInit {
         next: (data: any) => {
           sessionStorage.setItem('accesstoken', data.accessToken!);
           sessionStorage.setItem('refreshtoken', data.refreshToken!);
+          this.toast.success({ detail: data.msg, duration: 2000 });
           this.router.navigateByUrl('/dashboard/home');
         },
-        error(error) {},
+        error: (error) => {
+          this.toast.error({ detail: error.error.msg, duration: 2000 });
+        },
       });
   }
 }

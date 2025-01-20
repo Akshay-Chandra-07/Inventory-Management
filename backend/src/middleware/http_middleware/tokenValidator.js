@@ -15,20 +15,17 @@ exports.validateToken = (req, res, next) => {
           next();
         } else {
           console.log("Invalid refresh");
-          return res.json({
-            message: "Refresh token is also invalid",
-            bool: false,
-          });
+          next(new Error("Refresh token is also invalid"));
         }
       } else if (err) {
-        return res.json({ message: "Invalid token", bool: false });
+        next(new Error("token invalid"));
       } else {
         req.userId = decoded.id;
         next();
       }
     });
   } else {
-    res.json({ message: "Token not found", bool: false });
+    next(new Error("token not found"));
   }
 };
 

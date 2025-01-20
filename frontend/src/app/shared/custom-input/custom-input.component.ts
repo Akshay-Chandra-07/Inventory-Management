@@ -20,7 +20,7 @@ export class CustomInputComponent implements OnInit, ControlValueAccessor {
   @Input() placeholder: string = '';
   @Input() label: string = '';
   @Input() help: string = '';
-  value: string = '';
+  @Input() value: string = '';
   isDisabled: boolean = false;
 
   ngOnInit(): void {}

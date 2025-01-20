@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -8,7 +8,6 @@ import { environment } from 'src/environments/environment';
 export class SignupService {
   apiUrl = environment.apiUrl;
   constructor(private _http: HttpClient) {}
-
   registerUser(
     first_name: string,
     last_name: string,

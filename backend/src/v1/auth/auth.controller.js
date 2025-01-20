@@ -8,12 +8,21 @@ const {
   refreshTokenGenerator,
 } = require("../../utils/refresh_token_generator");
 
+const { validateUserCreation } = require("./dto/userCreation.dto");
+const { validateUserLogin } = require("./dto/userLogin.dto");
+
 exports.register = async (req, res, next) => {
+  const validated = validateUserCreation(req.body);
+  console.log(validated);
+  if (validated.error) {
+    console.log(validated.error.message);
+    return res.status(400).json({ msg: validated.error.message });
+  }
   username = await authService.generateUsername(req.body.email);
   password = await authService.passwordHashing(req.body.password);
   const checkUser = await authQueries.checkUser(req.body.email);
   if (checkUser.length > 0) {
-    return res.status(200).json({ msg: "Email already registered" });
+    return res.status(400).json({ msg: "Email already registered" });
   } else {
     createUser = await authQueries.register(
       req.body.first_name,
@@ -36,7 +45,7 @@ exports.login = async (req, res, next) => {
     const checkCredentials = await authQueries.checkCredentials(user);
 
     if (checkCredentials.length == 0) {
-      return res.status(200).json({ msg: "Invalid credentials" });
+      return res.status(400).json({ msg: "Invalid credentials" });
     }
     try {
       const boolPassword = await authService.comparePassword(
@@ -52,7 +61,7 @@ exports.login = async (req, res, next) => {
           refreshToken: refreshToken,
         });
       } else {
-        return res.status(200).json({ msg: "Invalid Password" });
+        return res.status(400).json({ msg: "Invalid Password" });
       }
     } catch (error) {
       console.log(error);

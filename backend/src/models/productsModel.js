@@ -11,6 +11,27 @@ class Products extends Model {
     return "product_id";
   }
 
+  static get jsonSchema() {
+    return {
+      type: "object",
+      required: [
+        "product_id",
+        "product_name",
+        "quantity_in_stock",
+        "unit_price",
+      ],
+      properties: {
+        product_id: { type: "integer" },
+        product_name: { type: "string" },
+        category_id: { type: "integer" },
+        quantity_in_stock: { type: "integer" },
+        unit_price: { type: "integer" },
+        unit: { type: "string" },
+        product_image: { type: "text" },
+      },
+    };
+  }
+
   static get relationMappings() {
     return {
       categories: {

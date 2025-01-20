@@ -10,6 +10,18 @@ class ProductToVendor extends Model {
     return "product_to_vendor_id";
   }
 
+  static get jsonSchema() {
+    return {
+      type: "object",
+      required: ["product_to_vendor_id"],
+      properties: {
+        product_to_vendor_id: { type: "integer" },
+        vendor_id: { type: "integer" },
+        product_id: { type: "integer" },
+      },
+    };
+  }
+
   static get relationMappings() {
     return {
       products: {

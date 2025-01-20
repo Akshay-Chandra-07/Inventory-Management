@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { FilesService } from '../../services/files.service';
+import { NgToastService } from 'ng-angular-popup';
+import { ZipService } from 'src/app/core/services/zip.service';
 
 @Component({
   selector: 'app-files',
@@ -9,9 +11,14 @@ import { FilesService } from '../../services/files.service';
 })
 export class FilesComponent implements OnInit {
   files: any;
+  selectedFiles: any = {};
 
   filesTableData: any;
-  constructor(private filesService: FilesService) {}
+  constructor(
+    private filesService: FilesService,
+    private toast: NgToastService,
+    private zipService: ZipService,
+  ) {}
 
   uploadUserFiles = new FormGroup({
     inputFiles: new FormControl(''),
@@ -43,7 +50,7 @@ export class FilesComponent implements OnInit {
             .uploadToUrl(this.files, data1.url)
             .pipe()
             .subscribe({
-              next: (data: any) => {
+              next: (data2: any) => {
                 this.filesService
                   .uploadFileDataToDb(
                     data1.fileKey,
@@ -53,11 +60,16 @@ export class FilesComponent implements OnInit {
                   )
                   .pipe()
                   .subscribe({
-                    next: (data: any) => {
-                      console.log(data);
+                    next: (data3: any) => {
+                      console.log(data3);
+                      this.toast.success({ detail: data3.msg, duration: 2000 });
                       this.fetchUserFiles();
                     },
-                    error(error: any) {
+                    error: (error: any) => {
+                      this.toast.error({
+                        detail: error.error.msg,
+                        duration: 2000,
+                      });
                       console.log(error);
                     },
                   });
@@ -86,5 +98,25 @@ export class FilesComponent implements OnInit {
           console.log(error);
         },
       });
+  }
+
+  onSelectFile(data: any) {
+    if (!this.selectedFiles) {
+      this.selectedFiles = {};
+    }
+    if (this.selectedFiles[data.file_id]) {
+      delete this.selectedFiles[data.file_id];
+    } else {
+      this.selectedFiles[data.file_id] = data;
+    }
+  }
+
+  downloadZip() {
+    let fileUrls: any = [];
+    Object.values(this.selectedFiles).forEach((file: any) => {
+      fileUrls.push([file.file_name, file.file_url]);
+    });
+    this.zipService.downloadZip(fileUrls);
+    this.selectedFiles = {};
   }
 }
