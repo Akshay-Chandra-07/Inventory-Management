@@ -28,6 +28,15 @@ class AuthQueries {
       .where("email", "=", user)
       .orWhere("username", "=", user);
   }
+  static async setRefreshToken(id, token) {
+    return await db("users")
+      .update({ refresh_token: token })
+      .where("user_id", "=", id);
+  }
+
+  static async getRefreshToken(id) {
+    return await db("users").select("refresh_token").where("user_id", "=", id);
+  }
 }
 
 module.exports = AuthQueries;

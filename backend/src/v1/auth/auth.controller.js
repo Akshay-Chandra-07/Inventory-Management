@@ -55,6 +55,10 @@ exports.login = async (req, res, next) => {
       if (boolPassword) {
         const accessToken = accessTokenGenerator(checkCredentials[0].user_id);
         const refreshToken = refreshTokenGenerator(checkCredentials[0].user_id);
+        await authQueries.setRefreshToken(
+          checkCredentials[0].user_id,
+          refreshToken,
+        );
         return res.status(200).json({
           msg: "User logged in!",
           accessToken: accessToken,

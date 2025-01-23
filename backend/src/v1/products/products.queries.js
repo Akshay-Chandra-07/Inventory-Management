@@ -181,6 +181,7 @@ class ProductQueries {
           .where("vendor_id", "=", vendor_id[i])
           .andWhere("product_id", "=", productId);
         if (existing.length == 0) {
+          console.log("vendor not found and inserting");
           try {
             await trx("product_to_vendor").insert({
               vendor_id: vendor_id[i],
@@ -192,21 +193,42 @@ class ProductQueries {
           }
         }
       }
-      inDbVendors.forEach((dbVendor) => {
-        console.log(dbVendor.vendor_id);
+      // inDbVendors.forEach(async (dbVendor) => {
+      //   console.log(dbVendor.vendor_id);
+      //   let bool = false;
+      //   vendor_id.forEach((vendor) => {
+      //     if (dbVendor.vendor_id == vendor) {
+      //       bool = true;
+      //     }
+      //   });
+      //   if (!bool) {
+      //     console.log("deleting", dbVendor.vendor_id,dbVendor.product_to_vendor_id);
+      //     await trx("product_to_vendor")
+      //       .delete()
+      //       .where("product_to_vendor_id", "=", dbVendor.product_to_vendor_id);
+      //     }
+      //   await trx.commit();
+      // });
+      for (const dbVendor of inDbVendors) {
         let bool = false;
-        vendor_id.forEach((vendor) => {
-          if (dbVendor.vendor_id == vendor) {
+        for (const vendor of vendor_id) {
+          if (dbVendor.vendor_id === vendor) {
             bool = true;
+            break;
           }
-        });
+        }
+
         if (!bool) {
-          console.log("deleting", dbVendor.vendor_id);
-          trx("product_to_vendor")
+          console.log(
+            "deleting",
+            dbVendor.vendor_id,
+            dbVendor.product_to_vendor_id,
+          );
+          await trx("product_to_vendor")
             .delete()
             .where("product_to_vendor_id", "=", dbVendor.product_to_vendor_id);
         }
-      });
+      }
       await trx.commit();
       return;
     } catch (error) {

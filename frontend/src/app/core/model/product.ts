@@ -7,6 +7,7 @@ export interface Product {
   category_name: string;
   vendors: Vendor[];
   quantity?: number;
+  selectedVendor?: string;
 }
 
 export interface Vendor {

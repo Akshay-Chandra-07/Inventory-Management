@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { FilesService } from '../../services/files.service';
 import { NgToastService } from 'ng-angular-popup';
 import { ZipService } from 'src/app/core/services/zip.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-files',
@@ -12,12 +13,14 @@ import { ZipService } from 'src/app/core/services/zip.service';
 export class FilesComponent implements OnInit {
   files: any;
   selectedFiles: any = {};
+  previewData: any;
 
   filesTableData: any;
   constructor(
     private filesService: FilesService,
     private toast: NgToastService,
     private zipService: ZipService,
+    private sanitize: DomSanitizer,
   ) {}
 
   uploadUserFiles = new FormGroup({
@@ -118,5 +121,27 @@ export class FilesComponent implements OnInit {
     });
     this.zipService.downloadZip(fileUrls);
     this.selectedFiles = {};
+  }
+
+  onPreviewing(data: any) {
+    let newUrl;
+    this.previewData = data;
+    if (
+      this.previewData.file_type ==
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      this.previewData.file_type == 'application/msword' ||
+      this.previewData.file_type ==
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    ) {
+      newUrl = this.sanitize.bypassSecurityTrustResourceUrl(
+        'https://view.officeapps.live.com/op/embed.aspx?src=' +
+          this.previewData.file_url,
+      );
+    } else {
+      newUrl = this.sanitize.bypassSecurityTrustResourceUrl(
+        this.previewData.file_url,
+      );
+    }
+    this.previewData.preview_url = newUrl;
   }
 }

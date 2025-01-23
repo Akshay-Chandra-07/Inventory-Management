@@ -17,7 +17,7 @@ import { importFile } from 'src/app/core/utils/importExcel';
 })
 export class InventoryComponent implements OnInit {
   pageNumber: number = 1;
-  pageCount: number = 10;
+  pageCount: number = 7;
   productCount: number = 0;
   lastPage: number = 1;
   inventoryData: any;
@@ -181,6 +181,7 @@ export class InventoryComponent implements OnInit {
         );
       }
     });
+    console.log(this.addProductForm);
     this.inventoryService
       .updateProductData(
         this.addProductForm.controls.productName.value!,
@@ -294,13 +295,11 @@ export class InventoryComponent implements OnInit {
   }
 
   increaseMoveToCartProduct(i: string, product_id: number) {
-    this.moveToCartData![i].quantity! += 1;
-    this.moveToCartData![i].quantity_in_stock -= 1;
+    this.tempcartService.increaseTempCartQuantity(product_id);
   }
 
   decreaseMoveToCartProduct(i: string, product_id: number) {
-    this.moveToCartData![i].quantity! -= 1;
-    this.moveToCartData![i].quantity_in_stock += 1;
+    this.tempcartService.decreaseTempCartQuantity(product_id);
   }
 
   onChangeCheckbox(i: any, p_id: any) {
@@ -318,36 +317,42 @@ export class InventoryComponent implements OnInit {
   }
 
   onChangeModalCheckbox(i: any, p_id: any) {
-    console.log(i, p_id);
-    if (this.moveToCartData) {
-      console.log(this.moveToCartData[p_id]);
-      this.tempcartService.modifyPreFinalCart(p_id, this.moveToCartData[p_id]);
-    }
+    // if (this.moveToCartData) {
+    //   console.log(this.moveToCartData[p_id]);
+    //   this.tempcartService.modifyPreFinalCart(p_id, this.moveToCartData[p_id]);
+    // }
+    this.tempcartService.toggleCheckbox(p_id);
   }
 
   onMoveToFinalCart() {
-    this.moveToCartQuantityProducts =
-      this.tempcartService.getPreFinalCartData();
-    if (this.moveToCartQuantityProducts) {
-      for (let key of Object.keys(this.moveToCartQuantityProducts)) {
-        const newQuantity =
-          this.moveToCartQuantityProducts[key]['quantity_in_stock'] -
-          this.moveToCartQuantityProducts[key]['quantity'];
-        this.tempcartService
-          .modifyQuantityInDb(key, newQuantity)
-          .pipe()
-          .subscribe({
-            next: (data: any) => {
-              console.log(data);
-            },
-            error: (error: any) => {
-              console.log(error);
-            },
-          });
-      }
-    }
-    this.fetchPageProducts();
+    // this.moveToCartQuantityProducts =
+    //   this.tempcartService.getPreFinalCartData();
+    // if (this.moveToCartQuantityProducts) {
+    //   for (let key of Object.keys(this.moveToCartQuantityProducts)) {
+    //     const newQuantity =
+    //       this.moveToCartQuantityProducts[key]['quantity_in_stock'] -
+    //       this.moveToCartQuantityProducts[key]['quantity'];
+    //     this.tempcartService
+    //       .modifyQuantityInDb(key, newQuantity)
+    //       .pipe()
+    //       .subscribe({
+    //         next: (data: any) => {
+    //           console.log(data);
+    //         },
+    //         error: (error: any) => {
+    //           console.log(error);
+    //         },
+    //       });
+    //   }
+    // }
+    this.tempcartService.populateFinalCart();
     this.toggler.emit('changing');
+  }
+
+  onVendorSelect(event: Event, product_id: any) {
+    const input = event.target as HTMLSelectElement;
+    console.log(input.value);
+    this.tempcartService.changeVendorSelection(input.value, product_id);
   }
 
   changeToCartComponent() {

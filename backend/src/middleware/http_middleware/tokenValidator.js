@@ -1,41 +1,67 @@
 const jwt = require("jsonwebtoken");
+const { decrypt } = require("../../utils/crypto");
+const AuthQueries = require("../../v1/auth/auth.queries");
 const generateAccessToken = require("../../utils/access_token_generator");
 
-exports.validateToken = (req, res, next) => {
+function validateAndSend(refresh, req) {
+  try {
+    const result = jwt.verify(refresh, process.env.JWT_REFRESHSECRETKEY);
+    decrypted_obj = JSON.parse(decrypt(result.enc));
+    const newToken = generateAccessToken.accessTokenGenerator(decrypted_obj.id);
+    req.userId = decrypted_obj.id;
+    return newToken;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
+
+function getUserid(token) {
+  try {
+    console.log(token);
+    const decoded = jwt.decode(token, process.env.JWT_TOKENSECRETKEY);
+    console.log(decoded);
+    const decrypted_obj = JSON.parse(decrypt(decoded.enc));
+    console.log("in get userid", decrypted_obj.id);
+    return decrypted_obj.id;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
+
+const validateToken = (req, res, next) => {
   let token = req.headers.Authorization || req.headers.authorization;
-  const refresh = req.headers.refresh;
+  let refresh = req.headers.refresh;
   if (token && token.startsWith("Bearer")) {
     token = token.split(" ")[1];
-    jwt.verify(token, process.env.JWT_TOKENSECRETKEY, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_TOKENSECRETKEY, async (err, decoded) => {
       if (err instanceof jwt.TokenExpiredError) {
-        const newToken = validateAndSend(refresh, req);
+        const userid = getUserid(token);
+        refresh = await AuthQueries.getRefreshToken(userid);
+        const newToken = validateAndSend(refresh[0].refresh_token, req);
         if (newToken != null) {
-          console.log("Token Generated");
-          res.set("Authorization", newToken);
+          console.log("new token generated");
+          res.setHeader("Authorization", newToken);
+          // res.setHeader('Cache-Control', 'no-store');
           next();
         } else {
           console.log("Invalid refresh");
-          next(new Error("Refresh token is also invalid"));
+          return res
+            .status(401)
+            .json({ message: "Refresh token is also invalid", bool: false });
         }
       } else if (err) {
-        next(new Error("token invalid"));
+        return res.status(401).json({ message: "Invalid token", bool: false });
       } else {
-        req.userId = decoded.id;
+        const decrypted_obj = JSON.parse(decrypt(decoded.enc));
+        req.userId = decrypted_obj.id;
         next();
       }
     });
   } else {
-    next(new Error("token not found"));
+    res.json({ message: "Token not found", bool: false });
   }
 };
 
-function validateAndSend(refresh, req) {
-  try {
-    result = jwt.verify(refresh, process.env.JWT_REFRESHSECRETKEY);
-    const newToken = generateAccessToken.accessTokenGenerator(result.id);
-    req.userId = result.id;
-    return newToken;
-  } catch (err) {
-    return null;
-  }
-}
+module.exports = { validateToken };

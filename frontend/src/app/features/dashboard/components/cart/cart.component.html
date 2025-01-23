@@ -48,70 +48,50 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let data of cartData | keyvalue; let i = index">
+        <!-- <div *ngIf="!cartData">
+          <h5>Please add items to cart</h5>
+        </div> -->
+        <tr *ngFor="let data of cartData; let i = index">
           <td>
             <div class="d-flex">
               <img
-                *ngIf="data.value.product_image"
-                [src]="data.value.product_image"
+                *ngIf="data.product_image"
+                [src]="data.product_image"
                 alt=""
                 width="10px"
                 height="10px"
               />
               <img
-                *ngIf="!data.value.product_image"
+                *ngIf="!data.product_image"
                 src="../../../../../assets/images/Group.svg"
                 alt=""
                 width="20px"
                 height="20px"
               />
               <p class="ps-2 py-0 text-small">
-                {{ data.value.product_name }}
+                {{ data.product_name }}
               </p>
             </div>
           </td>
           <td>
-            <p class="ps-2 py-0 text-small">{{ data.value.category_name }}</p>
+            <p class="ps-2 py-0 text-small">{{ data.category_name }}</p>
           </td>
-          <td *ngIf="data.value.vendors.length <= 3">
-            <div
-              *ngFor="let vendor of data.value.vendors; let i = index"
-              class="d-inline-flex"
-            >
-              <p class="status status-green px-2 py-1 ms-1">
-                {{ vendor.vendor_name | json }}
-              </p>
-            </div>
-          </td>
-          <td *ngIf="data.value.vendors.length > 3">
-            <div class="d-inline-flex">
-              <p class="status status-green px-2 py-1 ms-1">
-                {{ data.value.vendors[0].vendor_name | json }}
-              </p>
-              <p class="status status-green px-2 py-1 ms-1">
-                {{ data.value.vendors[1].vendor_name | json }}
-              </p>
-              <p class="status status-green px-2 py-1 ms-1">
-                {{ data.value.vendors[2].vendor_name | json }}
-              </p>
-              <p class="status status-grey px-2 py-1 ms-1">
-                +{{ data.value.vendors.length - 3 }}
-              </p>
-            </div>
+          <td>
+            <p>{{ data.selectedVendor }}</p>
           </td>
           <td>
             <button
               class="btn btn-sm btn-outline-secondary rounded"
-              (click)="decreaseCartProduct(data.key, data.value.product_id)"
-              [disabled]="data.value.quantity == 1"
+              (click)="decreaseCartProduct(i, data.product_id)"
+              [disabled]="data.quantity == 1"
             >
               -
             </button>
-            {{ data.value.quantity }}
+            {{ data.quantity }}
             <button
-              (click)="increaseCartProduct(data.key, data.value.product_id)"
+              (click)="increaseCartProduct(i, data.product_id)"
               class="btn btn-sm btn-outline-secondary rounded"
-              [disabled]="data.value.quantity == data.value.quantity_in_stock"
+              [disabled]="data.quantity == data.quantity_in_stock"
             >
               +
             </button>
@@ -119,7 +99,7 @@
           <td>
             <button
               class="btn btn-sm btn-outline-secondary"
-              (click)="deleteFromTempcartData(i, data.value.product_id)"
+              (click)="deleteFromTempcartData(i, data.product_id)"
             >
               <img src="../../../../../assets/logos/delete-logo.svg" alt="" />
             </button>

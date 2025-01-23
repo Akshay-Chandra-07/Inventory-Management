@@ -108,7 +108,6 @@ exports.updateProductData = async (req, res, next) => {
   let category_id = "";
   try {
     category_id = await CategoriesQueries.getCategoryId(category);
-    console.log(category_id);
   } catch (error) {
     console.log(error);
     return res.status(400).json({ msg: "Category not found" });
