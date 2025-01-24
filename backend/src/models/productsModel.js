@@ -14,12 +14,7 @@ class Products extends Model {
   static get jsonSchema() {
     return {
       type: "object",
-      required: [
-        "product_id",
-        "product_name",
-        "quantity_in_stock",
-        "unit_price",
-      ],
+      required: ["product_name", "quantity_in_stock", "unit_price"],
       properties: {
         product_id: { type: "integer" },
         product_name: { type: "string" },
@@ -27,7 +22,7 @@ class Products extends Model {
         quantity_in_stock: { type: "integer" },
         unit_price: { type: "integer" },
         unit: { type: "string" },
-        product_image: { type: "text" },
+        product_image: { type: "string" },
       },
     };
   }

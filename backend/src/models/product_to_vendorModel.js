@@ -13,7 +13,7 @@ class ProductToVendor extends Model {
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["product_to_vendor_id"],
+      required: [],
       properties: {
         product_to_vendor_id: { type: "integer" },
         vendor_id: { type: "integer" },

@@ -4,7 +4,7 @@ const db = require("../../mysql/db");
 class CategoriesQueries {
   static async getCategoryId(category_name) {
     try {
-      const category_id = await db("categories")
+      const category_id = await Categories.query(db)
         .select("category_id")
         .where("category_name", "=", category_name);
       return category_id[0].category_id;
@@ -14,7 +14,7 @@ class CategoriesQueries {
     }
   }
   static async getAllCategories() {
-    return await db("categories").select("category_name");
+    return await Categories.query(db).select("category_name");
   }
 }
 

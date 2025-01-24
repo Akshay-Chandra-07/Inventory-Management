@@ -214,7 +214,7 @@ export class InventoryComponent implements OnInit {
   }
 
   onAddProductFormSubmit() {
-    console.log(this.addProductForm.value);
+    console.log(typeof this.addProductForm.value.quantity);
     this.vendors.forEach((vendor) => {
       if (vendor.selected) {
         (this.addProductForm.get('vendor') as FormArray).push(
@@ -237,6 +237,7 @@ export class InventoryComponent implements OnInit {
           this.toast.success({ detail: data1.msg, duration: 2000 });
           this.vendors = [];
           if (this.file) {
+            console.log(data1);
             this.uploadFile(data1.productId);
           } else {
             this.onSearch();

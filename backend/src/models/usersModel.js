@@ -11,17 +11,9 @@ class Users extends Model {
   }
 
   static get jsonSchema() {
-    console.log("schema");
     return {
       type: "object",
-      required: [
-        "user_id",
-        "first_name",
-        "last_name",
-        "username",
-        "password",
-        "email",
-      ],
+      required: ["first_name", "last_name", "username", "password", "email"],
       properties: {
         user_id: { type: "integer" },
         first_name: { type: "string" },
@@ -29,8 +21,8 @@ class Users extends Model {
         username: { type: "string" },
         password: { type: "string" },
         email: { type: "string" },
-        profile_url: { type: "text" },
-        thumbnail: { type: "text" },
+        profile_url: { type: "string" },
+        thumbnail: { type: "string" },
       },
     };
   }

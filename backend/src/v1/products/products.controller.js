@@ -176,6 +176,7 @@ exports.updateProductData = async (req, res, next) => {
 exports.insertProductUrlToTable = async (req, res, next) => {
   const product_image = process.env.s3_URL + req.body.url;
   const product_id = req.body.product_id[0];
+  console.log("logging here", product_image, product_id);
   const validated = validateProductUrlSchema({ product_image, product_id });
   if (validated.error) {
     console.log(validated.error.message);

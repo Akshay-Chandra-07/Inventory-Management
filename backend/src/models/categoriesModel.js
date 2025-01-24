@@ -17,7 +17,7 @@ class Categories extends Model {
       properties: {
         category_id: { type: "integer" },
         category_name: { type: "string" },
-        "description ": { type: "string" },
+        description: { type: "string" },
         file_type: { type: "string" },
         file_image: { type: "string" },
       },

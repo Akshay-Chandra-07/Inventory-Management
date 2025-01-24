@@ -60,7 +60,7 @@ const validateGetPageProductsSchema = (data) => {
 const productUpdateSchema = joi.object({
   productName: joi.string().required(),
   category: joi.string().required(),
-  quantity: joi.number().required(),
+  quantity: joi.string().required(),
   vendors: joi.array().required(),
   unit: joi.string().required(),
   unitPrice: joi.number().required(),

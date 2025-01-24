@@ -39,7 +39,8 @@ const validateToken = (req, res, next) => {
       if (err instanceof jwt.TokenExpiredError) {
         const userid = getUserid(token);
         refresh = await AuthQueries.getRefreshToken(userid);
-        const newToken = validateAndSend(refresh[0].refresh_token, req);
+        console.log(refresh);
+        const newToken = validateAndSend(refresh, req);
         if (newToken != null) {
           console.log("new token generated");
           res.setHeader("Authorization", newToken);

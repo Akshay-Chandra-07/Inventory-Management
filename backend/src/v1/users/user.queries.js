@@ -4,8 +4,8 @@ const Files = require("../../models/filesModel");
 
 class userQueries {
   static async uploadProfilePicture(url, id) {
-    return await db("users")
-      .update({ profile_pic: url })
+    return await Users.query(db)
+      .patch({ profile_pic: url })
       .where("user_id", "=", id);
   }
 
@@ -16,7 +16,7 @@ class userQueries {
   }
 
   static async uploadFile(file_name, file_size, file_type, file_url, user_id) {
-    return await db("files").insert({
+    return await Files.query(db).insert({
       file_name,
       file_size,
       file_type,

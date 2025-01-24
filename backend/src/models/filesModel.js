@@ -13,14 +13,14 @@ class Files extends Model {
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["file_id", "file_name", "file_size", "file_type", "file_url"],
+      required: ["file_name", "file_size", "file_type", "file_url"],
       properties: {
         file_id: { type: "integer" },
         user_id: { type: "integer" },
         file_name: { type: "string" },
-        file_size: { type: "string" },
+        file_size: { type: "integer" },
         file_type: { type: "string" },
-        file_image: { type: "text" },
+        file_image: { type: "string" },
       },
     };
   }

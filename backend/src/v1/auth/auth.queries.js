@@ -8,7 +8,7 @@ class AuthQueries {
 
   static async register(first_name, last_name, email, username, password) {
     try {
-      await db("users").insert({
+      await Users.query(db).insert({
         first_name,
         last_name,
         email,
@@ -23,19 +23,25 @@ class AuthQueries {
   }
 
   static async checkCredentials(user) {
-    return await db("users")
+    return await Users.query(db)
       .select("user_id", "username", "email", "password")
       .where("email", "=", user)
       .orWhere("username", "=", user);
   }
   static async setRefreshToken(id, token) {
-    return await db("users")
-      .update({ refresh_token: token })
+    console.log("setting token ", token);
+    return await Users.query(db)
+      .patch({ refresh_token: token })
       .where("user_id", "=", id);
   }
 
   static async getRefreshToken(id) {
-    return await db("users").select("refresh_token").where("user_id", "=", id);
+    const token = await Users.query(db)
+      .select("refresh_token")
+      .where("user_id", "=", id);
+    //  console.log("fetching token " ,token[0].refresh_token)
+    console.log("fetfching", token[0].refresh_token);
+    return token[0].refresh_token;
   }
 }
 

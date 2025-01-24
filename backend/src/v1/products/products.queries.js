@@ -1,5 +1,7 @@
 const db = require("../../mysql/db");
 const Products = require("../../models/productsModel");
+const ProductToVendor = require("../../models/product_to_vendorModel");
+const Vendors = require("../../models/vendorsModel");
 
 class ProductQueries {
   static async getAllProducts() {}
@@ -96,7 +98,7 @@ class ProductQueries {
 
   static async getProductCount() {
     try {
-      return await db("products").count().where("status", "<>", "99");
+      return await Products.query(db).count().where("status", "<>", "99");
     } catch (error) {
       console.log(error);
       return;
@@ -105,7 +107,7 @@ class ProductQueries {
 
   static async getProductId(productName, user_id) {
     try {
-      return await db("products")
+      return await Products.query(db)
         .select("product_id")
         .where("product_name", "=", productName);
     } catch (error) {
@@ -122,34 +124,45 @@ class ProductQueries {
     unit,
     vendor_id,
   ) {
+    console.log(
+      productName,
+      category_id,
+      unit_price,
+      quantity,
+      unit,
+      vendor_id,
+    );
     const trx = await db.transaction();
     try {
-      const product_id = await trx("products").insert({
+      const product_id = await Products.query(trx).insert({
         product_name: productName,
         category_id: category_id,
-        quantity_in_stock: quantity,
+        quantity_in_stock: parseInt(quantity),
         unit: unit,
-        unit_price: unit_price,
+        unit_price: parseInt(unit_price),
       });
+      console.log(product_id.product_id);
       for (let i = 0; i < vendor_id.length; i++) {
         try {
-          await trx("product_to_vendor").insert({
+          await ProductToVendor.query(trx).insert({
             vendor_id: vendor_id[i],
-            product_id,
+            product_id: product_id.product_id,
           });
         } catch (error) {
+          console.log(error);
           await trx.rollback();
         }
       }
 
       await trx.commit();
-      return product_id;
+      return [product_id.product_id];
     } catch (error) {
       await trx.rollback();
       console.log(error);
       return error;
     }
   }
+
   static async updateProductData(
     productName,
     category_id,
@@ -161,26 +174,26 @@ class ProductQueries {
   ) {
     const trx = await db.transaction();
     try {
-      await trx("products")
+      await Products.query(trx)
         .update({
           product_name: productName,
           category_id: category_id,
-          quantity_in_stock: quantity,
+          quantity_in_stock: parseInt(quantity),
           unit: unit,
-          unit_price: unit_price,
+          unit_price: parseInt(unit_price),
         })
         .where("product_id", "=", productId);
-      const inDbVendors = await trx("product_to_vendor")
+      const inDbVendors = await ProductToVendor.query(trx)
         .select("product_to_vendor_id", "vendor_id")
         .where("product_id", "=", productId);
       for (let i = 0; i < vendor_id.length; i++) {
-        const existing = await trx("product_to_vendor")
+        const existing = await ProductToVendor.query(trx)
           .select("product_to_vendor_id")
           .where("vendor_id", "=", vendor_id[i])
           .andWhere("product_id", "=", productId);
         if (existing.length == 0) {
           try {
-            await trx("product_to_vendor").insert({
+            await ProductToVendor.query(trx).insert({
               vendor_id: vendor_id[i],
               product_id: productId,
             });
@@ -190,22 +203,6 @@ class ProductQueries {
           }
         }
       }
-      // inDbVendors.forEach(async (dbVendor) => {
-      //   console.log(dbVendor.vendor_id);
-      //   let bool = false;
-      //   vendor_id.forEach((vendor) => {
-      //     if (dbVendor.vendor_id == vendor) {
-      //       bool = true;
-      //     }
-      //   });
-      //   if (!bool) {
-      //     console.log("deleting", dbVendor.vendor_id,dbVendor.product_to_vendor_id);
-      //     await trx("product_to_vendor")
-      //       .delete()
-      //       .where("product_to_vendor_id", "=", dbVendor.product_to_vendor_id);
-      //     }
-      //   await trx.commit();
-      // });
       for (const dbVendor of inDbVendors) {
         let bool = false;
         for (const vendor of vendor_id) {
@@ -216,7 +213,7 @@ class ProductQueries {
         }
 
         if (!bool) {
-          await trx("product_to_vendor")
+          await ProductToVendor.query(trx)
             .delete()
             .where("product_to_vendor_id", "=", dbVendor.product_to_vendor_id);
         }
@@ -233,8 +230,8 @@ class ProductQueries {
   static async insertProductUrlToTable(product_image, product_id) {
     console.log(product_image, product_id);
     try {
-      return await db("products")
-        .update({ product_image: product_image })
+      return await Products.query(db)
+        .patch({ product_image: product_image })
         .where("product_id", "=", product_id);
     } catch (error) {
       console.log(error);
@@ -244,7 +241,7 @@ class ProductQueries {
 
   static async getVendorId(vendor_name) {
     try {
-      const vendor_id = await db("vendors")
+      const vendor_id = await Vendors.query(db)
         .select("vendor_id")
         .where("vendor_name", "=", vendor_name);
       return vendor_id[0].vendor_id;
@@ -254,34 +251,38 @@ class ProductQueries {
   }
 
   static async updateProductQuantity(product_id, newQuantity) {
-    await db("products")
-      .update({ quantity_in_stock: newQuantity })
-      .where("product_id", "=", product_id);
-    return await db("products")
-      .select("quantity_in_stock")
-      .where("product_id", "=", product_id);
+    try {
+      await Products.query(db)
+        .patch({ quantity_in_stock: newQuantity })
+        .where("product_id", "=", product_id);
+      return await db("products")
+        .select("quantity_in_stock")
+        .where("product_id", "=", product_id);
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
   }
 
   static async deleteSingleProduct(product_id) {
-    return await db("products")
-      .update({ status: "99" })
+    return await Products.query(db)
+      .patch({ status: "99" })
       .where("product_id", "=", product_id);
   }
 
   static async insertAllProducts(data) {
     const trx = await db.transaction();
     try {
-      console.log(data);
       for (let product of data) {
-        const product_id = await trx("products").insert({
+        const product_id = await Products.query(trx).insert({
           product_name: product.productName,
           category_id: product.categoryId,
           quantity_in_stock: product.quantityInStock,
           unit_price: product.unitPrice,
           unit: product.measure,
         });
-        await trx("product_to_vendor").insert({
-          product_id: product_id,
+        await ProductToVendor.query(trx).insert({
+          product_id: product_id.product_id,
           vendor_id: product.vendorId,
         });
       }
