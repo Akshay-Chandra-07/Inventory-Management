@@ -1,7 +1,7 @@
+const { logger } = require("../loggers/winston");
 class GlobalErrorLog {
   errorLogger(err, req, res, next) {
-    console.log("Global error handler");
-    console.error(err.stack);
+    logger(err.stack);
     res.status(err.status || 500).json({
       success: false,
       message: err.message,

@@ -173,15 +173,12 @@ class ProductQueries {
       const inDbVendors = await trx("product_to_vendor")
         .select("product_to_vendor_id", "vendor_id")
         .where("product_id", "=", productId);
-      console.log(inDbVendors);
-      console.log(vendor_id);
       for (let i = 0; i < vendor_id.length; i++) {
         const existing = await trx("product_to_vendor")
           .select("product_to_vendor_id")
           .where("vendor_id", "=", vendor_id[i])
           .andWhere("product_id", "=", productId);
         if (existing.length == 0) {
-          console.log("vendor not found and inserting");
           try {
             await trx("product_to_vendor").insert({
               vendor_id: vendor_id[i],
@@ -219,11 +216,6 @@ class ProductQueries {
         }
 
         if (!bool) {
-          console.log(
-            "deleting",
-            dbVendor.vendor_id,
-            dbVendor.product_to_vendor_id,
-          );
           await trx("product_to_vendor")
             .delete()
             .where("product_to_vendor_id", "=", dbVendor.product_to_vendor_id);
@@ -239,12 +231,14 @@ class ProductQueries {
   }
 
   static async insertProductUrlToTable(product_image, product_id) {
+    console.log(product_image, product_id);
     try {
       return await db("products")
         .update({ product_image: product_image })
         .where("product_id", "=", product_id);
     } catch (error) {
-      next(new Error(error));
+      console.log(error);
+      return error;
     }
   }
 

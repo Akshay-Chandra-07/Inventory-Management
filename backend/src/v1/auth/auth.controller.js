@@ -41,6 +41,11 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   const { user, password } = req.body;
+  const validated = validateUserLogin(req.body);
+  if (validated.error) {
+    console.log(validated.error.message);
+    return res.status(401).json({ msg: validated.error.message });
+  }
   try {
     const checkCredentials = await authQueries.checkCredentials(user);
 

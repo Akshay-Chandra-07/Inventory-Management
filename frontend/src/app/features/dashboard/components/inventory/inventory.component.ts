@@ -151,6 +151,7 @@ export class InventoryComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files) {
       this.file = input.files[0];
+      console.log('added file');
     }
   }
 
@@ -200,7 +201,7 @@ export class InventoryComponent implements OnInit {
             vendor.selected = false;
           });
           if (this.file) {
-            this.uploadFile(data1.productId);
+            this.uploadFile([this.editingData.product_id]);
           } else {
             this.onSearch();
           }
@@ -249,6 +250,7 @@ export class InventoryComponent implements OnInit {
   }
 
   uploadFile(productId: any) {
+    console.log(productId);
     const fileName = this.file.name.replace(/\s+/g, '');
     const fileType = this.file.type;
     this.filesService

@@ -6,7 +6,6 @@ const productCreationSchema = joi.object({
     "string.min": "Product name should be atleast 2 characters",
     "string.max": "Product name must be less than 30 characters",
   }),
-  category_id: joi.number(),
   quantity_in_stock: joi
     .number()
     .required()
@@ -21,11 +20,97 @@ const productCreationSchema = joi.object({
     .messages({ "string.max": "unit length must be less than 10 characters" }),
   product_image: joi.string(),
   category_name: joi.string(),
-  vendor_name: joi.string(),
+  vendors: joi.array(),
 });
 
-const validateProductSchema = (data) => {
-  return productCreationSchema.validate(data, { abortEarly: false });
+const validateProductSchema = ({
+  product_name,
+  category_name,
+  vendors,
+  unit_price,
+  quantity_in_stock,
+  unit,
+}) => {
+  return productCreationSchema.validate(
+    {
+      product_name,
+      category_name,
+      vendors,
+      unit_price,
+      quantity_in_stock,
+      unit,
+    },
+    { abortEarly: false },
+  );
 };
 
-module.exports = { validateProductSchema };
+const getPageProductsSchema = joi.object({
+  pageNumber: joi
+    .number()
+    .messages({ "number.base": "page number is required" }),
+  pageCount: joi.number().messages({ "number.base": "page count is required" }),
+  searchValue: joi.any(),
+  searchFilters: joi.any(),
+});
+
+const validateGetPageProductsSchema = (data) => {
+  return getPageProductsSchema.validate(data, { abortEarly: false });
+};
+
+const productUpdateSchema = joi.object({
+  productName: joi.string().required(),
+  category: joi.string().required(),
+  quantity: joi.number().required(),
+  vendors: joi.array().required(),
+  unit: joi.string().required(),
+  unitPrice: joi.number().required(),
+  productId: joi.number().required(),
+});
+
+const validateProductUpdateSchema = (data) => {
+  return productUpdateSchema.validate(data, { abortEarly: false });
+};
+
+const productUrlSchema = joi.object({
+  product_image: joi.string().required(),
+  product_id: joi.number().required(),
+});
+
+const validateProductUrlSchema = (data) => {
+  return productUrlSchema.validate(data, { abortEarly: false });
+};
+
+const updateQuantitySchema = joi.object({
+  p_id: joi.number().required(),
+  newQuantity: joi.number().required(),
+});
+
+const validateUpdateQuantitySchema = (data) => {
+  return updateQuantitySchema.validate(data, { abortEarly: false });
+};
+
+const deleteProductSchema = joi.object({
+  product_id: joi.number().required(),
+});
+
+const validateDeleteProductSchema = (data) => {
+  return deleteProductSchema.validate(data);
+};
+
+const excelDataSchema = joi.object({
+  data: joi.array().required(),
+});
+
+const validateExcelDataSchema = (data) => {
+  return excelDataSchema.validate(data);
+};
+
+module.exports = {
+  validateProductSchema,
+  validateGetPageProductsSchema,
+  validateProductUpdateSchema,
+  validateProductUrlSchema,
+  validateUpdateQuantitySchema,
+  validateDeleteProductSchema,
+  validateExcelDataSchema,
+};

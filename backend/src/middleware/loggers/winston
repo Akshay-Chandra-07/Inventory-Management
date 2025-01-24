@@ -1,0 +1,21 @@
+const winston = require('winston')
+const {combine,timestamp,json,errors} = winston.format
+
+const logger = winston.createLogger({
+    level : process.env.LOG_LEVEL || 'info',
+    format : combine(errors({ stack: true }),timestamp('YYYY-MM-DD hh:mm:ss.SSS A'),json()),
+    transports : [new winston.transports.File({
+        filename : 'errors.log',
+        dirname : './src/middleware/loggers/logs'
+    })],
+    exceptionHandlers : [new winston.transports.File({
+        filename : 'exception_errors.log',
+        dirname : './src/middleware/loggers/logs'
+    })],
+    rejectionHandlers : [new winston.transports.File({
+        filename : 'rejection_errors.log',
+        dirname : './src/middleware/loggers/logs'
+    })]
+})
+
+module.exports = {logger}

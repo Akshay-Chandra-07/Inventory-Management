@@ -15,6 +15,7 @@ app.use(express.json());
 app.use("/v1", require("./v1/v1Routes"));
 
 app.use(errorLogger);
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Listening to port ${process.env.PORT}`);
