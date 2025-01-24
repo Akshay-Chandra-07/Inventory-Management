@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -7,6 +7,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthorizationInterceptor } from './core/interceptors/authorization.interceptor';
 import { NgToastModule } from 'ng-angular-popup';
+import { ErrorHandlerService } from './core/services/error-handler.service';
+import { ErrorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,6 +26,15 @@ import { NgToastModule } from 'ng-angular-popup';
       useClass: AuthorizationInterceptor,
       multi: true,
     },
+    {
+      provide : HTTP_INTERCEPTORS,
+      useClass : ErrorHandlerInterceptor,
+      multi : true
+    },
+    {
+      provide : ErrorHandler,
+      useClass : ErrorHandlerService
+    }
   ],
   bootstrap: [AppComponent],
 })

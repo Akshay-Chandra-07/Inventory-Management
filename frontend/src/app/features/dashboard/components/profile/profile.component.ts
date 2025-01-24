@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
 import { catchError, of } from 'rxjs';
 import { NgToastService } from 'ng-angular-popup';
+import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
 
 @Component({
   selector: 'app-profile',
@@ -14,14 +15,13 @@ export class ProfileComponent implements OnInit {
   userData: any | undefined;
   profileImage: any;
   name: string | undefined;
-  // username: string = 'akshay07';
-  // email: string = 'akshaybandi202@gmail.com';
   image: string = '../../../../../assets/images/Group.svg';
 
   constructor(
     private router: Router,
     private profileService: ProfileService,
     private toast: NgToastService,
+    private errorHandler : ErrorHandlerService
   ) {}
 
   ngOnInit(): void {
@@ -37,7 +37,7 @@ export class ProfileComponent implements OnInit {
       .getUserData()
       .pipe(
         catchError((error) => {
-          console.log(error);
+          this.errorHandler.handleError(error)
           sessionStorage.clear();
           this.router.navigateByUrl('auth/login');
           return of();
@@ -49,8 +49,8 @@ export class ProfileComponent implements OnInit {
           this.userData = data.user[0];
           this.name = this.userData.first_name + ' ' + this.userData.last_name;
         },
-        error(error) {
-          console.log(error);
+        error:(error)=>{
+          this.errorHandler.handleError(error);
         },
       });
   }
@@ -91,18 +91,18 @@ export class ProfileComponent implements OnInit {
                     this.fetchUser();
                   },
                   error: (error) => {
-                    console.log(error);
+                    this.errorHandler.handleError(error);
                     this.toast.error({ detail: error.error.msg });
                   },
                 });
               },
-              error(error) {
-                console.log(error);
+              error:(error)=>{
+                this.errorHandler.handleError(error);
               },
             });
         },
-        error(error) {
-          console.log(error);
+        error:(error)=>{
+          this.errorHandler.handleError(error);
         },
       });
   }

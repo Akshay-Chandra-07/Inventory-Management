@@ -13,8 +13,6 @@ export class MainComponent implements OnInit {
   ngOnInit(): void {}
 
   onToggle(event: Event) {
-    console.log(event);
-
     this.toggleComponents = !this.toggleComponents;
   }
 }

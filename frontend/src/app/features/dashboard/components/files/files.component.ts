@@ -4,6 +4,7 @@ import { FilesService } from '../../services/files.service';
 import { NgToastService } from 'ng-angular-popup';
 import { ZipService } from 'src/app/core/services/zip.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
 
 @Component({
   selector: 'app-files',
@@ -21,6 +22,7 @@ export class FilesComponent implements OnInit {
     private toast: NgToastService,
     private zipService: ZipService,
     private sanitize: DomSanitizer,
+    private errorHandler : ErrorHandlerService
   ) {}
 
   uploadUserFiles = new FormGroup({
@@ -73,17 +75,17 @@ export class FilesComponent implements OnInit {
                         detail: error.error.msg,
                         duration: 2000,
                       });
-                      console.log(error);
+                      this.errorHandler.handleError(error);
                     },
                   });
               },
-              error(error: any) {
-                console.log(error);
+              error:(error: any)=>{
+                this.errorHandler.handleError(error);
               },
             });
         },
-        error(error: any) {
-          console.log(error);
+        error:(error: any)=>{
+          this.errorHandler.handleError(error);
         },
       });
   }
@@ -97,8 +99,8 @@ export class FilesComponent implements OnInit {
           console.log(data);
           this.filesTableData = data.userFiles;
         },
-        error(error: any) {
-          console.log(error);
+        error:(error: any)=>{
+          this.errorHandler.handleError(error);
         },
       });
   }

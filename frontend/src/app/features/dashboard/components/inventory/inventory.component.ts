@@ -9,6 +9,7 @@ import { debounceTime, Subject } from 'rxjs';
 import { generatePdf } from '../../../../core/utils/downloadPdf';
 import { downloadExcel } from '../../../../core/utils/downloadExcel';
 import { importFile } from 'src/app/core/utils/importExcel';
+import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
 
 @Component({
   selector: 'app-inventory',
@@ -53,6 +54,7 @@ export class InventoryComponent implements OnInit {
     private filesService: FilesService,
     private tempcartService: TempcartService,
     private toast: NgToastService,
+    private errorHandler : ErrorHandlerService
   ) {
     this.searchSubject
       .pipe(debounceTime(500))
@@ -70,8 +72,8 @@ export class InventoryComponent implements OnInit {
               this.lastPage = Math.ceil(this.productCount / this.pageCount);
               console.log(this.inventoryData);
             },
-            error(error) {
-              console.log(error);
+            error:(error)=>{
+              this.errorHandler.handleError(error);
             },
           });
       });
@@ -113,7 +115,7 @@ export class InventoryComponent implements OnInit {
           });
         },
         error: (error: any) => {
-          console.log(error);
+          this.errorHandler.handleError(error);
         },
       });
   }
@@ -130,7 +132,7 @@ export class InventoryComponent implements OnInit {
           console.log(this.vendors);
         },
         error: (error: any) => {
-          console.log(error);
+          this.errorHandler.handleError(error);
         },
       });
   }
@@ -167,8 +169,8 @@ export class InventoryComponent implements OnInit {
           this.lastPage = Math.ceil(this.productCount / this.pageCount);
           console.log(this.productCount);
         },
-        error(error) {
-          console.log(error);
+        error:(error)=>{
+          this.errorHandler.handleError(error);
         },
       });
   }
@@ -207,7 +209,7 @@ export class InventoryComponent implements OnInit {
           }
         },
         error: (error: any) => {
-          console.log(error);
+          this.errorHandler.handleError(error);
           this.toast.success({ detail: error.error.msg, duration: 2000 });
         },
       });
@@ -244,7 +246,7 @@ export class InventoryComponent implements OnInit {
           }
         },
         error: (error: any) => {
-          console.log(error);
+          this.errorHandler.handleError(error);
           this.toast.success({ detail: error.error.msg, duration: 2000 });
         },
       });
@@ -277,13 +279,13 @@ export class InventoryComponent implements OnInit {
                       });
                       this.onSearch();
                     },
-                    error(error: any) {
-                      console.log(error);
+                    error:(error: any)=>{
+                      this.errorHandler.handleError(error);
                     },
                   });
               },
               error: (error) => {
-                console.log(error);
+                this.errorHandler.handleError(error);
                 this.toast.error({
                   detail: error.error.msg,
                   duration: 2000,
@@ -291,8 +293,8 @@ export class InventoryComponent implements OnInit {
               },
             });
         },
-        error(error: any) {
-          console.log(error);
+        error:(error: any)=>{
+          this.errorHandler.handleError(error);
         },
       });
   }
@@ -343,7 +345,7 @@ export class InventoryComponent implements OnInit {
     //           console.log(data);
     //         },
     //         error: (error: any) => {
-    //           console.log(error);
+    //           this.errorHandler.handleError(error);
     //         },
     //       });
     //   }

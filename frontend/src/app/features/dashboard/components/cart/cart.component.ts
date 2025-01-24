@@ -3,6 +3,7 @@ import { TempcartService } from '../../services/tempcart.service';
 import { Product } from 'src/app/core/model/product';
 import { debounceTime, Subject } from 'rxjs';
 import { InventoryService } from '../../services/inventory.service';
+import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
 
 @Component({
   selector: 'app-cart',
@@ -19,6 +20,7 @@ export class CartComponent implements OnInit {
   constructor(
     private tempCartService: TempcartService,
     private inventoryService: InventoryService,
+    private errorHandler : ErrorHandlerService
   ) {
     this.quantitySubject
       .pipe(debounceTime(1000))
@@ -35,7 +37,7 @@ export class CartComponent implements OnInit {
               this.cartData = JSON.parse(localStorage.getItem('cart')!);
             },
             error: (error) => {
-              console.log(error);
+              this.errorHandler.handleError(error);
             },
           });
       });
