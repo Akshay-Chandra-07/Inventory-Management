@@ -27,14 +27,14 @@ import { ErrorHandlerInterceptor } from './core/interceptors/error-handler.inter
       multi: true,
     },
     {
-      provide : HTTP_INTERCEPTORS,
-      useClass : ErrorHandlerInterceptor,
-      multi : true
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorHandlerInterceptor,
+      multi: true,
     },
     {
-      provide : ErrorHandler,
-      useClass : ErrorHandlerService
-    }
+      provide: ErrorHandler,
+      useClass: ErrorHandlerService,
+    },
   ],
   bootstrap: [AppComponent],
 })

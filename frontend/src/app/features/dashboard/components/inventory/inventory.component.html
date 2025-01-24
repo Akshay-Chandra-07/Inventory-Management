@@ -107,7 +107,9 @@
     <table class="table">
       <thead class="table-light border">
         <tr class="">
-          <th><input type="checkbox" /></th>
+          <th>
+            <input type="checkbox" (change)="onChangeSelectAllProducts()" />
+          </th>
           <td class="col-2"><p class="table-head-p">Product Name</p></td>
           <td class="text-center"><p class="table-head-p">Status</p></td>
           <td>
@@ -122,23 +124,16 @@
       </thead>
       <tbody>
         <tr *ngFor="let data of inventoryData; let i = index">
-          <!-- <div *ngIf="productsInCart">
-            <td *ngIf="!productsInCart[data.product_id]">
-              <input
-                type="checkbox"
-                (change)="onChangeCheckbox(i, data.product_id)"
-                [disabled]="data.quantity_in_stock == 0"
-                [checked]="moveToCartData?.[data.product_id]"
-              />
-            </td>
-          </div> -->
           <div>
             <td>
               <input
                 type="checkbox"
                 (change)="onChangeCheckbox(i, data.product_id)"
                 [disabled]="data.quantity_in_stock == 0"
-                [checked]="moveToCartData?.[data.product_id]"
+                [checked]="
+                  (moveToCartData?.[data.product_id] || allProductsSelected) &&
+                  data.quantity_in_stock != 0
+                "
               />
             </td>
           </div>
@@ -160,28 +155,6 @@
             </div>
           </td>
           <td>
-            <!-- <div *ngIf="productsInCart">
-              <p
-                *ngIf="productsInCart[data.product_id]"
-                class="status status-grey px-2 py-1"
-              >
-                • In cart
-              </p>
-              <div *ngIf="!productsInCart[data.product_id]">
-                <p
-                  *ngIf="data.quantity_in_stock > 0"
-                  class="status status-green px-2 py-1"
-                >
-                  • Available
-                </p>
-                <p
-                  *ngIf="data.quantity_in_stock == 0"
-                  class="status status-grey px-2 py-1"
-                >
-                  • Sold out
-                </p>
-              </div>
-            </div> -->
             <div *ngIf="!productsInCart">
               <p
                 *ngIf="data.quantity_in_stock > 0"
@@ -333,15 +306,6 @@
             placeholder="Select category"
             formControlName="category"
           ></app-custom-dropdown>
-          <!-- <div>
-            <label for="">Vendor</label>
-            <select (change)="selectVendor($event)">
-              <option *ngFor="let vendor of vendors;let i = index" [value]="vendor.name" [selected]="vendor.selected" class="btn">{{vendor.name}}</option>
-            </select>
-            <div class="d-flex w-100 border" *ngFor="let vendor of vendors">
-              <caption class="text-small" *ngIf="vendor.selected">{{vendor.name}}<button class="btn btn-sm btn-secondary">x</button></caption>
-            </div>
-          </div> -->
           <div class="w-100">
             <label for="">Vendor</label>
             <div class="dropdown w-100">
@@ -409,28 +373,40 @@
             <input
               type="file"
               formControlName="productImage"
-              (change)="onFiles($event)"
-              accept=".jpeg,.jpg,.png"
+              (change)="onImageFiles($event)"
+              accept=".jpeg,.jpg,.png,.svg"
               style="visibility: hidden"
               class="position-absolute"
             />
-            <div>
+            <div *ngIf="!this.file">
               <img
                 src="../../../../../assets/logos/cloud-arrow-up.svg"
                 alt=""
                 width="20"
                 height="20"
               />
-              <p class="small text-muted">JPEG, SVG, PNG</p>
+              <p class="small text-muted">JPEG, JPG, SVG, PNG</p>
               <p class="small text-muted">
                 <span><b>click to upload</b></span> or drag and drop
               </p>
+            </div>
+            <div *ngIf="this.file">
+              <img [src]="urlCreator()" alt="" height="40" width="40" />
+              <p class="small text-muted">
+                <b>{{ this.file.name }}</b>
+              </p>
+              <p class="small text-muted">Click to choose again</p>
             </div>
           </label>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="closingEditModal()"
+        >
           Close
         </button>
         <button
@@ -438,6 +414,7 @@
           class="btn btn-primary"
           data-bs-dismiss="modal"
           (click)="onAddProductFormSubmit()"
+          [disabled]="this.addProductForm.invalid || this.selectedVendors === 0"
         >
           Add product
         </button>
@@ -560,12 +537,12 @@
               <input
                 type="file"
                 formControlName="productImage"
-                (change)="onFiles($event)"
-                accept=".jpeg,.jpg,.png"
+                (change)="onImageFiles($event)"
+                accept=".jpeg,.jpg,.png,.svg"
                 style="visibility: hidden"
                 class="position-absolute"
               />
-              <div>
+              <div *ngIf="!this.file">
                 <img
                   src="../../../../../assets/logos/cloud-arrow-up.svg"
                   alt=""
@@ -576,6 +553,13 @@
                 <p class="small text-muted">
                   <span><b>click to upload</b></span> or drag and drop
                 </p>
+              </div>
+              <div *ngIf="this.file">
+                <img [src]="urlCreator()" alt="" height="40" width="40" />
+                <p class="small text-muted">
+                  <b>{{ this.file.name }}</b>
+                </p>
+                <p class="small text-muted">Click to choose again</p>
               </div>
             </label>
           </form>
@@ -595,6 +579,7 @@
           class="btn btn-primary"
           data-bs-dismiss="modal"
           (click)="updateProductFormSubmit()"
+          [disabled]="this.selectedVendors === 0"
         >
           Submit
         </button>
@@ -624,7 +609,9 @@
           <table class="table">
             <thead class="table-light border">
               <tr class="">
-                <th><input type="checkbox" /></th>
+                <th>
+                  <input type="checkbox" (change)="onMoveToCartAllSelect()" />
+                </th>
                 <td class="col-3"><p class="table-head-p">Product Name</p></td>
                 <td>
                   <p class="table-head-p">Category <img src="" alt="" /></p>
@@ -738,6 +725,7 @@
           class="btn btn-primary col-3"
           data-bs-dismiss="modal"
           (click)="onMoveToFinalCart()"
+          [disabled]="!this.moveToCartData"
         >
           Move
         </button>
@@ -761,12 +749,6 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="importFileModalLabel">Select File</h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
       </div>
       <div class="modal-body">
         <form [formGroup]="addProductForm">
@@ -777,28 +759,45 @@
             <input
               type="file"
               formControlName="productImage"
-              (change)="onFiles($event)"
-              accept=".jpeg,.jpg,.png"
+              (change)="onExcelFile($event)"
+              accept=".xlx,.xlsx"
               style="visibility: hidden"
               class="position-absolute"
             />
-            <div>
+            <div *ngIf="!this.file">
               <img
                 src="../../../../../assets/logos/cloud-arrow-up.svg"
                 alt=""
                 width="20"
                 height="20"
               />
-              <p class="small text-muted">.xlsx</p>
+              <p class="small text-muted">.xlsx or .xlx</p>
               <p class="small text-muted">
                 <span><b>click to upload</b></span> or drag and drop
               </p>
+            </div>
+            <div *ngIf="this.file">
+              <img
+                src="../../../../../assets/logos/Microsoft_Office_Excel_Logo.svg"
+                alt=""
+                height="40"
+                width="40"
+              />
+              <p class="small text-muted">
+                <b>{{ this.file.name }}</b>
+              </p>
+              <p class="small text-muted">Click to choose again</p>
             </div>
           </label>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="onCloseImport()"
+        >
           Close
         </button>
         <button
@@ -806,6 +805,7 @@
           class="btn btn-primary"
           data-bs-dismiss="modal"
           (click)="onImportFile()"
+          [disabled]="!this.file"
         >
           Import Products
         </button>

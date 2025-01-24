@@ -45,6 +45,16 @@ exports.getPageProducts = async (req, res, next) => {
   }
 };
 
+exports.getAllProducts = async (req, res, next) => {
+  try {
+    const data = await ProductQueries.getAllProducts();
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ msg: "error fetching products" });
+  }
+};
+
 exports.getProductCount = async (req, res, next) => {
   try {
     const count = await productsQueries.getProductCount();

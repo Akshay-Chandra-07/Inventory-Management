@@ -21,7 +21,7 @@ export class ProfileComponent implements OnInit {
     private router: Router,
     private profileService: ProfileService,
     private toast: NgToastService,
-    private errorHandler : ErrorHandlerService
+    private errorHandler: ErrorHandlerService,
   ) {}
 
   ngOnInit(): void {
@@ -37,7 +37,7 @@ export class ProfileComponent implements OnInit {
       .getUserData()
       .pipe(
         catchError((error) => {
-          this.errorHandler.handleError(error)
+          this.errorHandler.handleError(error);
           sessionStorage.clear();
           this.router.navigateByUrl('auth/login');
           return of();
@@ -49,7 +49,7 @@ export class ProfileComponent implements OnInit {
           this.userData = data.user[0];
           this.name = this.userData.first_name + ' ' + this.userData.last_name;
         },
-        error:(error)=>{
+        error: (error) => {
           this.errorHandler.handleError(error);
         },
       });
@@ -61,10 +61,17 @@ export class ProfileComponent implements OnInit {
     this.router.navigateByUrl('/auth/login');
   }
 
-  onFiles(event: Event) {
+  onImageFiles(event: Event) {
+    const validFiletypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
     const input = event.target as HTMLInputElement;
-    if (input.files) {
+    if (input.files && validFiletypes.includes(input.files[0].type)) {
       this.profileImage = input.files[0];
+    } else {
+      input.value = '';
+      this.toast.warning({
+        detail: 'Only accepts .jpeg .jpg .png .svg files',
+        duration: 2000,
+      });
     }
   }
 
@@ -96,12 +103,12 @@ export class ProfileComponent implements OnInit {
                   },
                 });
               },
-              error:(error)=>{
+              error: (error) => {
                 this.errorHandler.handleError(error);
               },
             });
         },
-        error:(error)=>{
+        error: (error) => {
           this.errorHandler.handleError(error);
         },
       });

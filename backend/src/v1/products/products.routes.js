@@ -11,6 +11,12 @@ router.get(
   validateToken,
   productController.getPageProducts,
 );
+
+router.get(
+  "/get-all-products",
+  validateToken,
+  productController.getAllProducts,
+);
 router.get(
   "/get-product-count",
   validateToken,

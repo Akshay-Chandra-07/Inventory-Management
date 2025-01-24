@@ -20,7 +20,7 @@ export class CartComponent implements OnInit {
   constructor(
     private tempCartService: TempcartService,
     private inventoryService: InventoryService,
-    private errorHandler : ErrorHandlerService
+    private errorHandler: ErrorHandlerService,
   ) {
     this.quantitySubject
       .pipe(debounceTime(1000))

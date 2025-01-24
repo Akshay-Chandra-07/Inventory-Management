@@ -4,7 +4,22 @@ const ProductToVendor = require("../../models/product_to_vendorModel");
 const Vendors = require("../../models/vendorsModel");
 
 class ProductQueries {
-  static async getAllProducts() {}
+  static async getAllProducts() {
+    try {
+      return await Products.query(db).select(
+        "product_id",
+        "product_name",
+        "status",
+        "unit_price",
+        "quantity_in_stock",
+        "unit",
+        "category_id",
+      );
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
 
   static async getPageProducts(
     pageNumber,

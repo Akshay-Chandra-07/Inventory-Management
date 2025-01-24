@@ -21,7 +21,13 @@
     <table class="table table-striped my-1">
       <thead>
         <tr>
-          <td class="col-1"><input type="checkbox" /></td>
+          <td class="col-1">
+            <input
+              type="checkbox"
+              [checked]="this.allCheckbox"
+              (change)="onFilesAllCheckbox()"
+            />
+          </td>
           <td class="col">File name</td>
         </tr>
       </thead>
@@ -83,15 +89,18 @@
         <div class="container">
           <div class="file-upload-box py-3" id="fileUploadBox">
             <form [formGroup]="uploadUserFiles">
-              <label class="w-100" style="cursor: pointer">
+              <label
+                class="border rounded w-100 p-5 text-center"
+                style="cursor: pointer"
+              >
                 <input
                   type="file"
                   formControlName="inputFiles"
                   (change)="onFiles($event)"
-                  accept=".jpeg,.jpg,.png,.pdf"
+                  style="visibility: hidden"
                   class="position-absolute"
                 />
-                <div>
+                <div *ngIf="!this.files">
                   <img
                     src="../../../../../assets/logos/cloud-arrow-up.svg"
                     alt=""
@@ -100,6 +109,18 @@
                   <p class="small text-muted">
                     <span><b>click to upload</b></span> or drag and drop
                   </p>
+                </div>
+                <div *ngIf="this.files">
+                  <img
+                    src="../../../../../assets/logos/icons8-file.svg"
+                    alt=""
+                    height="40"
+                    width="40"
+                  />
+                  <p class="small text-muted">
+                    <b>{{ this.files.name }}</b>
+                  </p>
+                  <p class="small text-muted">Click to select again</p>
                 </div>
               </label>
             </form>
@@ -189,6 +210,7 @@
               type="button"
               class="btn btn-secondary px-2 py-1"
               data-bs-dismiss="modal"
+              (click)="closeImport()"
             >
               Cancel
             </button>

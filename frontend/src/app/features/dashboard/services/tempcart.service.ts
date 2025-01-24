@@ -28,7 +28,6 @@ export class TempcartService {
       data.selectedVendor = data.vendors[0].vendor_name;
       this.tempCartData[pId] = data;
     }
-    console.log(this.tempCartData);
   }
 
   changeVendorSelection(value: any, product_id: any) {

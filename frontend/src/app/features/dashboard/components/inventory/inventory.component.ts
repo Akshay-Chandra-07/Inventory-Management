@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { InventoryService } from '../../services/inventory.service';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FilesService } from '../../services/files.service';
 import { TempcartService } from '../../services/tempcart.service';
 import { Product } from 'src/app/core/model/product';
@@ -10,6 +10,7 @@ import { generatePdf } from '../../../../core/utils/downloadPdf';
 import { downloadExcel } from '../../../../core/utils/downloadExcel';
 import { importFile } from 'src/app/core/utils/importExcel';
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-inventory',
@@ -23,7 +24,9 @@ export class InventoryComponent implements OnInit {
   lastPage: number = 1;
   inventoryData: any;
   moveToCartData: Record<string, Product> | undefined;
-  file: any;
+  file: any | undefined;
+  selectedVendors = 0;
+  allProductsSelected = false;
 
   editingData: any;
 
@@ -54,7 +57,8 @@ export class InventoryComponent implements OnInit {
     private filesService: FilesService,
     private tempcartService: TempcartService,
     private toast: NgToastService,
-    private errorHandler : ErrorHandlerService
+    private errorHandler: ErrorHandlerService,
+    private sanitizer: DomSanitizer,
   ) {
     this.searchSubject
       .pipe(debounceTime(500))
@@ -70,9 +74,9 @@ export class InventoryComponent implements OnInit {
               this.inventoryData = data.cleanedProducts[0];
               this.productCount = data.cleanedProducts[1];
               this.lastPage = Math.ceil(this.productCount / this.pageCount);
-              console.log(this.inventoryData);
+              this.addProductsToMoveToCart();
             },
-            error:(error)=>{
+            error: (error) => {
               this.errorHandler.handleError(error);
             },
           });
@@ -84,12 +88,16 @@ export class InventoryComponent implements OnInit {
   });
 
   addProductForm = new FormGroup({
-    productName: new FormControl(''),
-    category: new FormControl(''),
+    productName: new FormControl('', [
+      Validators.required,
+      Validators.minLength(2),
+      Validators.maxLength(30),
+    ]),
+    category: new FormControl('', Validators.required),
     vendor: new FormArray([]),
-    quantity: new FormControl(''),
-    unit: new FormControl(''),
-    unitPrice: new FormControl(''),
+    quantity: new FormControl('', Validators.required),
+    unit: new FormControl('', [Validators.required, Validators.maxLength(10)]),
+    unitPrice: new FormControl('', Validators.required),
     productImage: new FormControl(''),
   });
 
@@ -102,6 +110,11 @@ export class InventoryComponent implements OnInit {
   }
   toggleVendorSelection(i: any) {
     this.vendors[i].selected = !this.vendors[i].selected;
+    if (this.vendors[i].selected) {
+      this.selectedVendors += 1;
+    } else {
+      this.selectedVendors -= 1;
+    }
   }
 
   fetchCategories() {
@@ -138,13 +151,11 @@ export class InventoryComponent implements OnInit {
   }
 
   onPageNext() {
-    console.log('next');
     this.pageNumber += 1;
     this.onSearch();
   }
 
   onPagePrevious() {
-    console.log('previous');
     this.pageNumber -= 1;
     this.onSearch();
   }
@@ -155,6 +166,66 @@ export class InventoryComponent implements OnInit {
       this.file = input.files[0];
       console.log('added file');
     }
+  }
+
+  onChangeSelectAllProducts() {
+    this.allProductsSelected = !this.allProductsSelected;
+    if (this.allProductsSelected) {
+      this.addProductsToMoveToCart();
+    } else {
+      for (let key of Object.keys(this.moveToCartData!)) {
+        this.tempcartService.modifyTempcart(key, this.moveToCartData![key]);
+      }
+      this.moveToCartData = {};
+    }
+  }
+
+  addProductsToMoveToCart(previous?: any) {
+    if (this.allProductsSelected) {
+      const data = this.tempcartService.fetchTempcartData();
+      if (!data || !data[this.inventoryData[0].product_id]) {
+        this.inventoryData.forEach((data: any) => {
+          this.tempcartService.modifyTempcart(data.product_id, data);
+        });
+      }
+    }
+  }
+
+  onImageFiles(event: Event) {
+    const validFiletypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
+    const input = event.target as HTMLInputElement;
+    if (input.files && validFiletypes.includes(input.files[0].type)) {
+      this.file = input.files[0];
+      console.log(URL.createObjectURL(this.file));
+    } else {
+      input.value = '';
+      this.toast.warning({
+        detail: 'Only accepts .jpeg .jpg .png .svg files',
+        duration: 2000,
+      });
+    }
+  }
+
+  onExcelFile(event: Event) {
+    const validFiletypes = [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ];
+    const input = event.target as HTMLInputElement;
+    if (input.files && validFiletypes.includes(input.files[0].type)) {
+      this.file = input.files[0];
+    } else {
+      input.value = '';
+      this.toast.warning({
+        detail: 'Only accepts .xlx and xlsx files',
+        duration: 2000,
+      });
+    }
+  }
+
+  urlCreator() {
+    const url = URL.createObjectURL(this.file);
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
   fetchPageProducts() {
@@ -169,7 +240,7 @@ export class InventoryComponent implements OnInit {
           this.lastPage = Math.ceil(this.productCount / this.pageCount);
           console.log(this.productCount);
         },
-        error:(error)=>{
+        error: (error) => {
           this.errorHandler.handleError(error);
         },
       });
@@ -216,7 +287,7 @@ export class InventoryComponent implements OnInit {
   }
 
   onAddProductFormSubmit() {
-    console.log(typeof this.addProductForm.value.quantity);
+    this.selectedVendors = 0;
     this.vendors.forEach((vendor) => {
       if (vendor.selected) {
         (this.addProductForm.get('vendor') as FormArray).push(
@@ -253,9 +324,8 @@ export class InventoryComponent implements OnInit {
   }
 
   uploadFile(productId: any) {
-    console.log(productId);
-    const fileName = this.file.name.replace(/\s+/g, '');
-    const fileType = this.file.type;
+    const fileName = this.file!.name.replace(/\s+/g, '');
+    const fileType = this.file!.type;
     this.filesService
       .getPresignedUrl(fileName, fileType)
       .pipe()
@@ -263,7 +333,7 @@ export class InventoryComponent implements OnInit {
         next: (data2: any) => {
           console.log(data2);
           this.filesService
-            .uploadToUrl(this.file, data2.url)
+            .uploadToUrl(this.file!, data2.url)
             .pipe()
             .subscribe({
               next: (data3: any) => {
@@ -277,9 +347,10 @@ export class InventoryComponent implements OnInit {
                       this.toast.success({
                         detail: 'Uploaded product image to db',
                       });
+                      this.file = undefined;
                       this.onSearch();
                     },
-                    error:(error: any)=>{
+                    error: (error: any) => {
                       this.errorHandler.handleError(error);
                     },
                   });
@@ -293,7 +364,7 @@ export class InventoryComponent implements OnInit {
               },
             });
         },
-        error:(error: any)=>{
+        error: (error: any) => {
           this.errorHandler.handleError(error);
         },
       });
@@ -322,34 +393,10 @@ export class InventoryComponent implements OnInit {
   }
 
   onChangeModalCheckbox(i: any, p_id: any) {
-    // if (this.moveToCartData) {
-    //   console.log(this.moveToCartData[p_id]);
-    //   this.tempcartService.modifyPreFinalCart(p_id, this.moveToCartData[p_id]);
-    // }
     this.tempcartService.toggleCheckbox(p_id);
   }
 
   onMoveToFinalCart() {
-    // this.moveToCartQuantityProducts =
-    //   this.tempcartService.getPreFinalCartData();
-    // if (this.moveToCartQuantityProducts) {
-    //   for (let key of Object.keys(this.moveToCartQuantityProducts)) {
-    //     const newQuantity =
-    //       this.moveToCartQuantityProducts[key]['quantity_in_stock'] -
-    //       this.moveToCartQuantityProducts[key]['quantity'];
-    //     this.tempcartService
-    //       .modifyQuantityInDb(key, newQuantity)
-    //       .pipe()
-    //       .subscribe({
-    //         next: (data: any) => {
-    //           console.log(data);
-    //         },
-    //         error: (error: any) => {
-    //           this.errorHandler.handleError(error);
-    //         },
-    //       });
-    //   }
-    // }
     this.tempcartService.populateFinalCart();
     this.toggler.emit('changing');
   }
@@ -417,6 +464,7 @@ export class InventoryComponent implements OnInit {
       this.vendors.forEach((data: any) => {
         if (data.name == vendor.vendor_name) {
           data.selected = true;
+          this.selectedVendors += 1;
         }
       });
     });
@@ -431,16 +479,12 @@ export class InventoryComponent implements OnInit {
   }
 
   closingEditModal() {
+    this.file = undefined;
+    this.selectedVendors = 0;
     this.vendors.forEach((vendor: any) => {
       vendor.selected = false;
     });
-    this.addProductForm.patchValue({
-      productName: '',
-      category: '',
-      productImage: '',
-      unit: '',
-      quantity: '',
-    });
+    this.addProductForm.reset();
   }
 
   onDownloadRow(data: any) {
@@ -448,12 +492,27 @@ export class InventoryComponent implements OnInit {
   }
 
   downloadExcel() {
-    downloadExcel(this.moveToCartData);
-    this.moveToCartData = {};
+    if (this.allProductsSelected) {
+      downloadExcel(this.moveToCartData);
+      this.moveToCartData = {};
+    } else {
+      this.inventoryService
+        .getPageProducts(1, this.productCount, '', [])
+        .pipe()
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            downloadExcel(data.cleanedProducts[0]);
+          },
+          error: (error) => {
+            this.errorHandler.handleError(error);
+          },
+        });
+    }
   }
 
   async onImportFile() {
-    const data = await importFile(this.file);
+    const data = await importFile(this.file!);
     this.inventoryService
       .insertExcelProducts(data)
       .pipe()
@@ -467,4 +526,10 @@ export class InventoryComponent implements OnInit {
         },
       });
   }
+
+  onCloseImport() {
+    this.file = undefined;
+  }
+
+  onMoveToCartAllSelect() {}
 }
