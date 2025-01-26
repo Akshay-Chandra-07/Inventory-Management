@@ -8,6 +8,7 @@ export interface Product {
   vendors: Vendor[];
   quantity?: number;
   selectedVendor?: string;
+  selected?: boolean;
 }
 
 export interface Vendor {

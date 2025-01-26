@@ -7,11 +7,22 @@
   >
     <div class="profile-content">
       <div class="part-1">
-        <div *ngIf="userData">
+        <div *ngIf="userData.profile_pic">
           <img [src]="userData.profile_pic" alt="" />
         </div>
-        <div *ngIf="!userData">
-          <img [src]="image" alt="" />
+        <div *ngIf="!userData.profile_pic">
+          <div
+            class="container d-flex justify-content-center align-items-center"
+            style="
+              background-color: rgb(143, 56, 225);
+              color: white;
+              border-radius: 50%;
+              height: 2rem;
+              width: 2rem;
+            "
+          >
+            <p class="">{{ name?.charAt(0)?.toLocaleUpperCase() }}</p>
+          </div>
         </div>
       </div>
       <div class="part-2">

@@ -1,1 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
+.btn-primary {
+  background-color: blueviolet;
+  border: blueviolet;
+}
+.btn-primary:hover {
+  background-color: blueviolet;
+  border: blueviolet;
+}
+
+.btn-outline-dark {
+  border: 1px solid gray;
+}
+
+.btn-outline-dark:hover {
+  background-color: blueviolet;
+  border: blueviolet;
+}
+
+.page-link {
+  color: blueviolet;
+}
+
+.page-link:hover {
+  color: blueviolet;
+}

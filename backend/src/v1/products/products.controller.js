@@ -14,6 +14,7 @@ const {
 
 exports.getPageProducts = async (req, res, next) => {
   const { pageNumber, pageCount, searchValue, searchFilters } = req.query;
+  const filters = JSON.parse(searchFilters);
   const validated = validateGetPageProductsSchema({
     pageNumber,
     pageCount,
@@ -29,7 +30,7 @@ exports.getPageProducts = async (req, res, next) => {
       pageNumber,
       pageCount,
       searchValue,
-      searchFilters,
+      filters,
     );
     const cleanedProducts = await productsService.cleanProducts(
       pageNumber,

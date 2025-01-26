@@ -85,24 +85,53 @@ class ProductQueries {
         .orderBy("p.product_id");
       // .offset((pageNumber - 1) * pageCount)
       // .limit(pageCount);
-
       if (searchValue) {
         query.where(function () {
           this.where("p.product_name", "like", `%${searchValue}%`)
             .orWhere("c.category_name", "like", `%${searchValue}%`)
             .orWhere("v.vendor_name", "like", `%${searchValue}%`);
         });
-      }
-
-      if (searchFilters) {
-        if (searchFilters.productName) {
-          query.where("p.product_name", "like", `%${searchValue}%`);
-        }
-        if (searchFilters.category) {
-          query.where("c.category_name", "like", `%${searchValue}%`);
-        }
-        if (searchFilters.vendor) {
-          query.where("v.vendor_name", "like", `%${searchValue}%`);
+        console.log(searchFilters[0]);
+        console.log(searchFilters[1]);
+        console.log(searchFilters[2]);
+        console.log(searchFilters.length);
+        if (searchFilters && searchFilters.length === 1) {
+          console.log("entering in 1");
+          if (searchFilters.includes("ProductName")) {
+            query.where("p.product_name", "like", `%${searchValue}%`);
+          }
+          if (searchFilters.includes("Category")) {
+            query.where("c.category_name", "like", `%${searchValue}%`);
+          }
+          if (searchFilters.includes("Vendor")) {
+            query.where("v.vendor_name", "like", `%${searchValue}%`);
+          }
+        } else if (searchFilters && searchFilters.length === 2) {
+          console.log(searchFilters);
+          console.log(searchFilters.length);
+          console.log("entering in");
+          if (
+            searchFilters.includes("ProductName") &&
+            searchFilters.includes("Category")
+          ) {
+            query
+              .where("p.product_name", "like", `%${searchValue}%`)
+              .orWhere("c.category_name", "like", `%${searchValue}%`);
+          } else if (
+            searchFilters.includes("ProductName") &&
+            searchFilters.includes("Vendor")
+          ) {
+            query
+              .where("p.product_name", "like", `%${searchValue}%`)
+              .orWhere("v.vendor_name", "like", `%${searchValue}%`);
+          } else if (
+            searchFilters.includes("Category") &&
+            searchFilters.includes("Vendor")
+          ) {
+            query
+              .where("c.category_name", "like", `%${searchValue}%`)
+              .orWhere("v.vendor_name", "like", `%${searchValue}%`);
+          }
         }
       }
       return query;

@@ -55,11 +55,73 @@
               (click)="onPreviewing(data)"
             >
               <div class="my-1 py-1">
-                <img src="../../../../../assets/images/Group.svg" alt="" />
+                <img
+                  *ngIf="
+                    data.file_type === 'image/png' ||
+                    data.file_type === 'image/jpeg' ||
+                    data.file_type === 'image/jpg' ||
+                    data.file_type === 'image/svg'
+                  "
+                  src="../../../../../assets/logos/image.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                />
+                <img
+                  *ngIf="
+                    data.file_type === 'application/vnd.ms-excel' ||
+                    data.file_type ===
+                      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                  "
+                  src="../../../../../assets/logos/filetype-xls.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                />
+                <img
+                  *ngIf="data.file_type === 'application/msword'"
+                  src="../../../../../assets/logos/filetype-doc.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                />
+                <img
+                  *ngIf="
+                    data.file_type ===
+                    'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+                  "
+                  src="../../../../../assets/logos/filetype-ppt.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                />
+                <img
+                  *ngIf="data.file_type === 'application/x-zip-compressed'"
+                  src="../../../../../assets/logos/file-earmark-zip.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                />
+                <img
+                  *ngIf="data.file_type === 'application/pdf'"
+                  src="../../../../../assets/logos/filetype-doc.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                />
+                <img
+                  *ngIf="data.file_type === 'video/mp4'"
+                  src="../../../../../assets/logos/film.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                />
               </div>
               <div class="d-flex flex-column mx-2">
-                <p class="p-0 m-0 small">{{ data.file_name }}</p>
-                <p class="p-0 m-0 small">
+                <p class="p-0 m-0" style="font-size: small">
+                  {{ data.file_name }}
+                </p>
+                <p class="p-0 m-0" style="font-size: small">
                   {{ data.file_size / 1024 | number: "1.0-0" }} Kb
                 </p>
               </div>
@@ -92,6 +154,9 @@
               <label
                 class="border rounded w-100 p-5 text-center"
                 style="cursor: pointer"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDropFile($event)"
               >
                 <input
                   type="file"
@@ -168,7 +233,12 @@
             <div *ngIf="previewData">
               <p>{{ previewData | json }}</p>
               <img
-                *ngIf="previewData.file_type === 'image/png'"
+                *ngIf="
+                  previewData.file_type === 'image/png' ||
+                  previewData.file_type === 'image/jpg' ||
+                  previewData.file_type === 'image/jpeg' ||
+                  previewData.file_type === 'image/svg'
+                "
                 [src]="previewData.preview_url"
                 alt=""
                 height="400"
@@ -203,6 +273,20 @@
                   width="100%"
                 ></iframe>
               </div>
+              <div
+                *ngIf="previewData.file_type === 'application/x-zip-compressed'"
+                class="text-center"
+              >
+                <img
+                  src="../../../../../assets/logos/file-earmark-zip.svg"
+                  alt=""
+                  width="100"
+                  height="100"
+                />
+                <p class="text-muted">
+                  <b>Cannot preview zip file please download</b>
+                </p>
+              </div>
             </div>
           </div>
           <div class="d-flex justify-content-around mt-1">
@@ -212,15 +296,7 @@
               data-bs-dismiss="modal"
               (click)="closeImport()"
             >
-              Cancel
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary px-2 py-1"
-              [disabled]="!uploadUserFiles.controls.inputFiles.value"
-              data-bs-dismiss="modal"
-            >
-              Download
+              Close
             </button>
           </div>
         </div>

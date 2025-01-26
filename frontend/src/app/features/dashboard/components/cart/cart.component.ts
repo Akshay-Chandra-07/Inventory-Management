@@ -1,17 +1,25 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { TempcartService } from '../../services/tempcart.service';
 import { Product } from 'src/app/core/model/product';
 import { debounceTime, Subject } from 'rxjs';
 import { InventoryService } from '../../services/inventory.service';
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css'],
 })
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, OnDestroy {
   cartData: Array<Product> | undefined;
+  searchCart: Array<Product> | undefined;
   private quantitySubject = new Subject<{
     productId: string;
     newQuantity: number;
@@ -29,10 +37,6 @@ export class CartComponent implements OnInit {
           .modifyQuantityInDb(productId, newQuantity)
           .subscribe({
             next: (data: any) => {
-              // console.log('new quantity', data);
-              // this.cartData![productId]['quantity_in_stock'] =
-              //   data[0].quantity_in_stock;
-              // console.log(this.cartData![productId]);
               localStorage.setItem('cart', JSON.stringify(this.cartData));
               this.cartData = JSON.parse(localStorage.getItem('cart')!);
             },
@@ -44,8 +48,74 @@ export class CartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.cartData = JSON.parse(localStorage.getItem('cart')!);
-    console.log(this.cartData);
+    if (localStorage.getItem('cart')) {
+      let data = localStorage.getItem('cart');
+      if (data) {
+        this.cartData = JSON.parse(data);
+      }
+    }
+  }
+
+  searchForm = new FormGroup({
+    inputValue: new FormControl(''),
+  });
+
+  searchFilters = {
+    category: false,
+    productName: false,
+    vendor: false,
+  };
+
+  onSearch(event: Event) {
+    if (this.searchForm.value.inputValue) {
+      let key: string = this.searchForm.value.inputValue.toLowerCase();
+      console.log(key);
+      this.searchCart = JSON.parse(localStorage.getItem('cart')!);
+      this.cartData = undefined;
+      if (this.searchCart) {
+        this.cartData = this.searchCart.filter((product: any) => {
+          const matchesProductName =
+            this.searchFilters.productName &&
+            product.product_name.toLowerCase().includes(key);
+          const matchesCategoryName =
+            this.searchFilters.category &&
+            product.category_name.toLowerCase().includes(key);
+          const matchesVendor =
+            this.searchFilters.vendor &&
+            product.selectedVendor.toLowerCase().includes(key);
+          if (
+            this.searchFilters.productName ||
+            this.searchFilters.category ||
+            this.searchFilters.vendor
+          ) {
+            return matchesProductName || matchesCategoryName || matchesVendor;
+          }
+          return (
+            product.product_name.toLowerCase().includes(key) ||
+            product.category_name.toLowerCase().includes(key) ||
+            product.selectedVendor.toLowerCase().includes(key)
+          );
+        });
+      }
+    } else {
+      if (localStorage.getItem('cart')) {
+        let data = localStorage.getItem('cart');
+        if (data) {
+          this.cartData = JSON.parse(data);
+        }
+      }
+    }
+  }
+
+  onAddSearchFilter(filterName: string) {
+    if (filterName == 'ProductName') {
+      this.searchFilters.productName = !this.searchFilters.productName;
+    } else if (filterName == 'Category') {
+      this.searchFilters.category = !this.searchFilters.category;
+    } else {
+      this.searchFilters.vendor = !this.searchFilters.vendor;
+    }
+    console.log(this.searchFilters);
   }
 
   changeToInventoryComponent() {
@@ -66,6 +136,15 @@ export class CartComponent implements OnInit {
   decreaseCartProduct(i: any, product_id: any) {
     this.cartData![i].quantity! -= 1;
     this.cartData![i].quantity_in_stock += 1;
+    for (let j = 0; j < this.cartData!.length; j++) {
+      if (
+        i != j &&
+        this.cartData![i].product_id == this.cartData![j].product_id
+      ) {
+        this.cartData![j].quantity_in_stock =
+          this.cartData![i].quantity_in_stock;
+      }
+    }
     this.quantitySubject.next({
       productId: JSON.stringify(this.cartData![i].product_id),
       newQuantity: this.cartData![i].quantity_in_stock,
@@ -75,9 +154,22 @@ export class CartComponent implements OnInit {
   increaseCartProduct(i: any, product_id: any) {
     this.cartData![i].quantity! += 1;
     this.cartData![i].quantity_in_stock -= 1;
+    for (let j = 0; j < this.cartData!.length; j++) {
+      if (
+        i != j &&
+        this.cartData![i].product_id == this.cartData![j].product_id
+      ) {
+        this.cartData![j].quantity_in_stock =
+          this.cartData![i].quantity_in_stock;
+      }
+    }
     this.quantitySubject.next({
       productId: JSON.stringify(this.cartData![i].product_id),
       newQuantity: this.cartData![i].quantity_in_stock,
     });
+  }
+
+  ngOnDestroy(): void {
+    console.log('destroying');
   }
 }

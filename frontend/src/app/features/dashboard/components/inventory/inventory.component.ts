@@ -27,10 +27,12 @@ export class InventoryComponent implements OnInit {
   file: any | undefined;
   selectedVendors = 0;
   allProductsSelected = false;
-
+  moveToCartAllSelected = false;
+  pageNumbers: number[] = [];
   editingData: any;
-
+  isDragging = false;
   productsInCart: any;
+  vendorColors: Record<string, string> = {};
 
   moveToCartQuantityProducts: any;
 
@@ -74,6 +76,7 @@ export class InventoryComponent implements OnInit {
               this.inventoryData = data.cleanedProducts[0];
               this.productCount = data.cleanedProducts[1];
               this.lastPage = Math.ceil(this.productCount / this.pageCount);
+              this.generatePageNumbers();
               this.addProductsToMoveToCart();
             },
             error: (error) => {
@@ -133,6 +136,14 @@ export class InventoryComponent implements OnInit {
       });
   }
 
+  generateMutedColor() {
+    const r = Math.floor(Math.random() * 60) + 200; // Red: 100–200
+    const g = Math.floor(Math.random() * 60) + 50; // Green: 100–200
+    const b = Math.floor(Math.random() * 50) + 100; // Blue: 100–200
+
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  }
+
   fetchVendors() {
     this.inventoryService
       .getVendors()
@@ -141,6 +152,8 @@ export class InventoryComponent implements OnInit {
         next: (data: any) => {
           data.forEach((value: any) => {
             this.vendors.push({ name: value.vendor_name, selected: false });
+            this.vendorColors[value.vendor_name] = this.generateMutedColor();
+            console.log(this.vendorColors);
           });
           console.log(this.vendors);
         },
@@ -160,11 +173,118 @@ export class InventoryComponent implements OnInit {
     this.onSearch();
   }
 
-  onFiles(event: Event) {
+  goToPage(page: number) {
+    if (page !== this.pageNumber) {
+      this.pageNumber = page;
+      this.onSearch();
+    }
+  }
+
+  generatePageNumbers() {
+    const pagesToShow = 5; // Number of pages to display in pagination
+    const half = Math.floor(pagesToShow / 2);
+
+    let startPage = Math.max(1, this.pageNumber - half);
+    let endPage = Math.min(this.lastPage, startPage + pagesToShow - 1);
+
+    if (endPage - startPage < pagesToShow - 1) {
+      startPage = Math.max(1, endPage - pagesToShow + 1);
+    }
+
+    this.pageNumbers = Array.from(
+      { length: endPage - startPage + 1 },
+      (_, i) => startPage + i,
+    );
+  }
+
+  // onFiles(event: Event) {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files) {
+  //     this.file = input.files[0];
+  //     console.log('added file');
+  //   }
+  // }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  onDropExcelFile(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+    const validFiletypes = [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ];
+    if (
+      event.dataTransfer?.files.length &&
+      validFiletypes.includes(event.dataTransfer?.files[0].type)
+    ) {
+      this.file = event.dataTransfer.files[0];
+    } else {
+      this.toast.warning({
+        detail: 'Only accepts .xlx and xlsx files',
+        duration: 2000,
+      });
+    }
+  }
+
+  onExcelFile(event: Event) {
+    const validFiletypes = [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ];
     const input = event.target as HTMLInputElement;
-    if (input.files) {
+    if (input.files && validFiletypes.includes(input.files[0].type)) {
       this.file = input.files[0];
-      console.log('added file');
+    } else {
+      input.value = '';
+      this.toast.warning({
+        detail: 'Only accepts .xlx and xlsx files',
+        duration: 2000,
+      });
+    }
+  }
+
+  onImageFiles(event: Event) {
+    const validFiletypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
+    const input = event.target as HTMLInputElement;
+    if (input.files && validFiletypes.includes(input.files[0].type)) {
+      this.file = input.files[0];
+      console.log(URL.createObjectURL(this.file));
+    } else {
+      input.value = '';
+      this.toast.warning({
+        detail: 'Only accepts .jpeg .jpg .png .svg files',
+        duration: 2000,
+      });
+    }
+  }
+
+  onDropImageFile(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+    const validFiletypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
+    if (
+      event.dataTransfer?.files.length &&
+      validFiletypes.includes(event.dataTransfer?.files[0].type)
+    ) {
+      this.file = event.dataTransfer.files[0];
+    } else {
+      this.toast.warning({
+        detail: 'Only accepts .jpeg .jpg .png .svg files',
+        duration: 2000,
+      });
     }
   }
 
@@ -191,38 +311,6 @@ export class InventoryComponent implements OnInit {
     }
   }
 
-  onImageFiles(event: Event) {
-    const validFiletypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
-    const input = event.target as HTMLInputElement;
-    if (input.files && validFiletypes.includes(input.files[0].type)) {
-      this.file = input.files[0];
-      console.log(URL.createObjectURL(this.file));
-    } else {
-      input.value = '';
-      this.toast.warning({
-        detail: 'Only accepts .jpeg .jpg .png .svg files',
-        duration: 2000,
-      });
-    }
-  }
-
-  onExcelFile(event: Event) {
-    const validFiletypes = [
-      'application/vnd.ms-excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    ];
-    const input = event.target as HTMLInputElement;
-    if (input.files && validFiletypes.includes(input.files[0].type)) {
-      this.file = input.files[0];
-    } else {
-      input.value = '';
-      this.toast.warning({
-        detail: 'Only accepts .xlx and xlsx files',
-        duration: 2000,
-      });
-    }
-  }
-
   urlCreator() {
     const url = URL.createObjectURL(this.file);
     return this.sanitizer.bypassSecurityTrustUrl(url);
@@ -230,7 +318,7 @@ export class InventoryComponent implements OnInit {
 
   fetchPageProducts() {
     this.inventoryService
-      .getPageProducts(this.pageNumber, this.pageCount, '', [''])
+      .getPageProducts(this.pageNumber, this.pageCount, '', [])
       .pipe()
       .subscribe({
         next: (data: any) => {
@@ -238,6 +326,7 @@ export class InventoryComponent implements OnInit {
           this.productCount = data.cleanedProducts[1];
           this.inventoryData = data.cleanedProducts[0];
           this.lastPage = Math.ceil(this.productCount / this.pageCount);
+          this.generatePageNumbers();
           console.log(this.productCount);
         },
         error: (error) => {
@@ -392,13 +481,15 @@ export class InventoryComponent implements OnInit {
     console.log(this.moveToCartData);
   }
 
-  onChangeModalCheckbox(i: any, p_id: any) {
+  onChangeModalCheckbox(p_id: any) {
     this.tempcartService.toggleCheckbox(p_id);
   }
 
   onMoveToFinalCart() {
     this.tempcartService.populateFinalCart();
-    this.toggler.emit('changing');
+    this.allProductsSelected = false;
+    this.moveToCartData = {};
+    // this.toggler.emit('changing');
   }
 
   onVendorSelect(event: Event, product_id: any) {
@@ -408,7 +499,8 @@ export class InventoryComponent implements OnInit {
   }
 
   changeToCartComponent() {
-    console.log('changing event');
+    this.moveToCartData = {};
+    this.allProductsSelected = false;
     this.toggler.emit('changing');
   }
 
@@ -531,5 +623,18 @@ export class InventoryComponent implements OnInit {
     this.file = undefined;
   }
 
-  onMoveToCartAllSelect() {}
+  onMoveToCartAllSelect() {
+    this.moveToCartAllSelected = !this.moveToCartAllSelected;
+    if (this.moveToCartAllSelected) {
+      for (let key of Object.keys(this.moveToCartData!)) {
+        if (!this.moveToCartData![key].selected) {
+          this.onChangeModalCheckbox(key);
+        }
+      }
+    } else {
+      for (let key of Object.keys(this.moveToCartData!)) {
+        this.onChangeModalCheckbox(key);
+      }
+    }
+  }
 }

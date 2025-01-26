@@ -61,7 +61,7 @@
         </form>
         <div class="dropdown">
           <button
-            class="btn dropdown-toggle border"
+            class="btn btn-sm dropdown-toggle border"
             type="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
@@ -100,15 +100,16 @@
     </div>
   </div>
 
-  <div
-    class="row d-flex flex-grow-1 table-responsive"
-    style="max-height: 63vh; overflow-x: hidden"
-  >
+  <div class="row d-flex flex-grow-1" style="max-height: 62vh">
     <table class="table">
       <thead class="table-light border">
         <tr class="">
           <th>
-            <input type="checkbox" (change)="onChangeSelectAllProducts()" />
+            <input
+              type="checkbox"
+              [checked]="this.allProductsSelected"
+              (change)="onChangeSelectAllProducts()"
+            />
           </th>
           <td class="col-2"><p class="table-head-p">Product Name</p></td>
           <td class="text-center"><p class="table-head-p">Status</p></td>
@@ -139,18 +140,28 @@
           </div>
           <td>
             <div class="d-flex">
-              <img
-                *ngIf="data.product_image"
-                [src]="data.product_image"
-                alt=""
-                width="20px"
-                height="20px"
-              />
-              <img
-                *ngIf="!data.product_image"
-                src="../../../../../assets/images/Group.svg"
-                alt=""
-              />
+              <div *ngIf="data.product_image">
+                <img
+                  [src]="data.product_image"
+                  alt=""
+                  width="20px"
+                  height="20px"
+                />
+              </div>
+              <div *ngIf="!data.product_image">
+                <div
+                  class="container d-flex justify-content-center align-items-center"
+                  style="
+                    background-color: rgb(143, 56, 225);
+                    color: white;
+                    border-radius: 50%;
+                    height: 25px;
+                    width: 25px;
+                  "
+                >
+                  <p class="">{{ data.product_name[0] }}</p>
+                </div>
+              </div>
               <p class="ps-2">{{ data.product_name }}</p>
             </div>
           </td>
@@ -179,22 +190,46 @@
                 *ngFor="let vendor of data.vendors; let i = index"
                 class="d-inline-flex"
               >
-                <p class="status px-2 py-1 ms-1">
-                  {{ vendor.vendor_name | json }}
+                <p
+                  class="status px-2 py-1 ms-1 border"
+                  style="color: white"
+                  [ngStyle]="{
+                    'background-color': vendorColors[vendor.vendor_name],
+                  }"
+                >
+                  {{ vendor.vendor_name }}
                 </p>
               </div>
             </div>
           </td>
           <td *ngIf="data.vendors.length > 3">
             <div *ngIf="vendors" class="d-inline-flex">
-              <p class="status px-2 py-1 ms-1">
-                {{ data.vendors[0].vendor_name | json }}
+              <p
+                class="status px-2 py-1 ms-1"
+                style="color: white"
+                [ngStyle]="{
+                  'background-color': vendorColors[data.vendors[0].vendor_name],
+                }"
+              >
+                {{ data.vendors[0].vendor_name }}
               </p>
-              <p class="status px-2 py-1 ms-1">
-                {{ data.vendors[1].vendor_name | json }}
+              <p
+                class="status px-2 py-1 ms-1"
+                style="color: white"
+                [ngStyle]="{
+                  'background-color': vendorColors[data.vendors[1].vendor_name],
+                }"
+              >
+                {{ data.vendors[1].vendor_name }}
               </p>
-              <p class="status px-2 py-1 ms-1">
-                {{ data.vendors[2].vendor_name | json }}
+              <p
+                class="status px-2 py-1 ms-1"
+                style="color: white"
+                [ngStyle]="{
+                  'background-color': vendorColors[data.vendors[2].vendor_name],
+                }"
+              >
+                {{ data.vendors[2].vendor_name }}
               </p>
               <p class="status status-grey px-2 py-1 ms-1">
                 +{{ data.vendors.length - 3 }}
@@ -234,7 +269,7 @@
     </table>
   </div>
 
-  <div class="row">
+  <div class="row pt-1">
     <div>
       <ul class="pagination pagination-sm justify-content-between">
         <li class="page-item">
@@ -249,6 +284,17 @@
               class="mb-1"
             />
             Previous
+          </button>
+        </li>
+
+        <li class="page-item">
+          <button
+            *ngFor="let page of pageNumbers"
+            (click)="goToPage(page)"
+            class="page-click btn"
+            [class.active]="page === pageNumber"
+          >
+            {{ page }}
           </button>
         </li>
 
@@ -369,6 +415,9 @@
           <label
             style="cursor: pointer"
             class="border rounded w-100 p-5 text-center"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDropImageFile($event)"
           >
             <input
               type="file"
@@ -533,6 +582,9 @@
             <label
               style="cursor: pointer"
               class="border rounded w-100 p-5 text-center"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)"
+              (drop)="onDropImageFile($event)"
             >
               <input
                 type="file"
@@ -627,7 +679,8 @@
                 <td>
                   <input
                     type="checkbox"
-                    (change)="onChangeModalCheckbox(i, data.value.product_id)"
+                    [checked]="this.moveToCartAllSelected"
+                    (change)="onChangeModalCheckbox(data.value.product_id)"
                   />
                 </td>
                 <td>
@@ -755,6 +808,9 @@
           <label
             style="cursor: pointer"
             class="border rounded w-100 p-5 text-center"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDropExcelFile($event)"
           >
             <input
               type="file"

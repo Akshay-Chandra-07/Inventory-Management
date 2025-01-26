@@ -41,6 +41,24 @@ export class FilesComponent implements OnInit {
     }
   }
 
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onDropFile(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.dataTransfer?.files.length) {
+      this.files = event.dataTransfer.files[0];
+    }
+  }
+
   onSubmitUserFiles() {
     const fileName = this.files.name.replace(/\s+/g, '');
     const fileType = this.files.type;

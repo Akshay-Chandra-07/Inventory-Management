@@ -18,23 +18,60 @@
         </button>
       </div>
       <div class="col-5 d-flex mx-2">
-        <input
-          class="form-control form-control-sm mr-sm-2"
-          type="search"
-          placeholder="Search"
-        />
-        <button class="btn btn-sm btn-outline-dark d-flex ms-1">
-          <img
-            src="../../../../../assets/logos/filter.svg"
-            class="mt-1"
-            alt=""
-          />Filter
-        </button>
+        <form [formGroup]="searchForm" class="w-100">
+          <input
+            class="form-control form-control-sm mr-sm-2"
+            type="search"
+            formControlName="inputValue"
+            (keyup)="onSearch($event)"
+            placeholder="Search"
+          />
+        </form>
+        <div class="dropdown">
+          <button
+            class="btn btn-sm dropdown-toggle border"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <img src="../../../../../assets/logos/filter.svg" alt="" />
+            Filter
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <input
+                type="checkbox"
+                class="btn ms-2"
+                (click)="onAddSearchFilter('ProductName')"
+              />
+              Product Name
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                class="btn ms-2"
+                (click)="onAddSearchFilter('Category')"
+              />
+              Category
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                class="btn ms-2"
+                (click)="onAddSearchFilter('Vendor')"
+              />
+              Vendor
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="row d-flex flex-grow-1">
+  <div
+    class="row d-flex flex-grow-1 table-responsive"
+    style="max-height: 70vh; overflow-x: hidden"
+  >
     <table class="table">
       <thead class="table-light border">
         <tr class="">
