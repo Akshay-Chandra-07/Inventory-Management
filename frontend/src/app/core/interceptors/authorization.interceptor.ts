@@ -20,9 +20,6 @@ export class AuthorizationInterceptor implements HttpInterceptor {
     const accessToken = sessionStorage.getItem('accesstoken');
     const refreshToken = sessionStorage.getItem('refreshtoken');
     if (req.url.includes('s3.ap-south-1.amazonaws.com')) {
-      // const modifiedReq = req.clone({
-      //   headers: req.headers.delete('Authorization'),
-      // });
       return next.handle(req);
     }
     const newReq = req.clone({

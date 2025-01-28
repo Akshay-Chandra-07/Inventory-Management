@@ -1,8 +1,8 @@
 const express = require("express");
 const userController = require("./user.controller");
-const {
-  parseForm,
-} = require("../../middleware/file_handler/formidableMiddleware");
+// const {
+//   parseForm,
+// } = require("../../middleware/file_handler/formidableMiddleware");
 const {
   validateToken,
 } = require("../../middleware/http_middleware/tokenValidator");

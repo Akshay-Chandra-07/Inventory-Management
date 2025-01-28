@@ -1,4 +1,4 @@
-<div class="container-fluid d-flex flex-column">
+<div class="container-fluid d-flex flex-column" style="max-height: fit-content;">
   <div class="row">
     <div class="container-fluid d-flex justify-content-between mt-3">
       <div>
@@ -100,7 +100,7 @@
     </div>
   </div>
 
-  <div class="row d-flex flex-grow-1" style="max-height: 62vh">
+  <div class="row d-flex flex-grow-1 table-responsive" style="max-height: 60vh">
     <table class="table">
       <thead class="table-light border">
         <tr class="">
@@ -194,7 +194,7 @@
                   class="status px-2 py-1 ms-1 border"
                   style="color: white"
                   [ngStyle]="{
-                    'background-color': vendorColors[vendor.vendor_name],
+                    'background-color': vendorColors[vendor.vendor_name]
                   }"
                 >
                   {{ vendor.vendor_name }}
@@ -208,7 +208,7 @@
                 class="status px-2 py-1 ms-1"
                 style="color: white"
                 [ngStyle]="{
-                  'background-color': vendorColors[data.vendors[0].vendor_name],
+                  'background-color': vendorColors[data.vendors[0].vendor_name]
                 }"
               >
                 {{ data.vendors[0].vendor_name }}
@@ -217,7 +217,7 @@
                 class="status px-2 py-1 ms-1"
                 style="color: white"
                 [ngStyle]="{
-                  'background-color': vendorColors[data.vendors[1].vendor_name],
+                  'background-color': vendorColors[data.vendors[1].vendor_name]
                 }"
               >
                 {{ data.vendors[1].vendor_name }}
@@ -226,7 +226,7 @@
                 class="status px-2 py-1 ms-1"
                 style="color: white"
                 [ngStyle]="{
-                  'background-color': vendorColors[data.vendors[2].vendor_name],
+                  'background-color': vendorColors[data.vendors[2].vendor_name]
                 }"
               >
                 {{ data.vendors[2].vendor_name }}

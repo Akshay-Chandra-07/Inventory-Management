@@ -1,4 +1,4 @@
-<div class="container-fluid p-0">
+<div class="container-fluid p-0" style="max-height: fit-content;">
   <div class="row my-2 px-4">Files uploaded</div>
   <div class="row">
     <div class="d-flex my-1">
@@ -17,7 +17,7 @@
       </button>
     </div>
   </div>
-  <div class="table-responsive" style="max-height: 74vh; overflow-x: hidden">
+  <div class="table-responsive" style="max-height: 73vh; overflow-x: hidden">
     <table class="table table-striped my-1">
       <thead>
         <tr>
@@ -231,7 +231,6 @@
         <div class="container">
           <div class="file-upload-box py-3" id="PreviewBox">
             <div *ngIf="previewData">
-              <p>{{ previewData | json }}</p>
               <img
                 *ngIf="
                   previewData.file_type === 'image/png' ||

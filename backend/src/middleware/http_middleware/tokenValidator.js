@@ -11,22 +11,17 @@ function validateAndSend(refresh, req) {
     req.userId = decrypted_obj.id;
     return newToken;
   } catch (err) {
-    console.log(err);
-    return null;
+    return err;
   }
 }
 
 function getUserid(token) {
   try {
-    console.log(token);
     const decoded = jwt.decode(token, process.env.JWT_TOKENSECRETKEY);
-    console.log(decoded);
     const decrypted_obj = JSON.parse(decrypt(decoded.enc));
-    console.log("in get userid", decrypted_obj.id);
     return decrypted_obj.id;
   } catch (err) {
-    console.log(err);
-    return null;
+    return err;
   }
 }
 
@@ -39,21 +34,17 @@ const validateToken = (req, res, next) => {
       if (err instanceof jwt.TokenExpiredError) {
         const userid = getUserid(token);
         refresh = await AuthQueries.getRefreshToken(userid);
-        console.log(refresh);
         const newToken = validateAndSend(refresh, req);
         if (newToken != null) {
-          console.log("new token generated");
           res.setHeader("Authorization", newToken);
-          // res.setHeader('Cache-Control', 'no-store');
           next();
         } else {
-          console.log("Invalid refresh");
           return res
             .status(401)
-            .json({ message: "Refresh token is also invalid", bool: false });
+            .json({ message: "Refresh token is also invalid" });
         }
       } else if (err) {
-        return res.status(401).json({ message: "Invalid token", bool: false });
+        return res.status(401).json({ message: "Invalid token" });
       } else {
         const decrypted_obj = JSON.parse(decrypt(decoded.enc));
         req.userId = decrypted_obj.id;
@@ -61,7 +52,7 @@ const validateToken = (req, res, next) => {
       }
     });
   } else {
-    res.json({ message: "Token not found", bool: false });
+    res.json({ message: "Token not found" });
   }
 };
 

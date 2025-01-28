@@ -27,43 +27,6 @@ class ProductQueries {
     searchValue,
     searchFilters,
   ) {
-    // try {
-    //   const paginatedTable = await db
-    //     .with("temporary_products", (qb) => {
-    //       qb.select(
-    //         "product_id",
-    //         "product_name",
-    //         "status",
-    //         "unit_price",
-    //         "quantity_in_stock",
-    //         "product_image",
-    //         "unit",
-    //         "category_id",
-    //       )
-    //         .from("products")
-    //         .where("status", "<>", "99")
-    //         .offset((pageNumber - 1) * pageCount)
-    //         .limit(pageCount);
-    //     })
-    //     .from("temporary_products as p")
-    //     .join("categories as c", "p.category_id", "c.category_id")
-    //     .join("product_to_vendor as pv", "p.product_id", "pv.product_id")
-    //     .join("vendors as v", "pv.vendor_id", "v.vendor_id")
-    //     .select(
-    //       "p.product_id",
-    //       "p.product_name",
-    //       "p.status",
-    //       "p.unit_price",
-    //       "p.quantity_in_stock",
-    //       "p.unit",
-    //       "p.product_image",
-    //       "c.category_id",
-    //       "c.category_name",
-    //       "v.vendor_id",
-    //       "v.vendor_name",
-    //     );
-    //   return paginatedTable;
-
     try {
       let query = db
         .select(
@@ -91,10 +54,6 @@ class ProductQueries {
             .orWhere("c.category_name", "like", `%${searchValue}%`)
             .orWhere("v.vendor_name", "like", `%${searchValue}%`);
         });
-        console.log(searchFilters[0]);
-        console.log(searchFilters[1]);
-        console.log(searchFilters[2]);
-        console.log(searchFilters.length);
         if (searchFilters && searchFilters.length === 1) {
           console.log("entering in 1");
           if (searchFilters.includes("ProductName")) {
@@ -136,7 +95,7 @@ class ProductQueries {
       }
       return query;
     } catch (error) {
-      throw new Error(error);
+      return error;
     }
   }
 
@@ -144,8 +103,7 @@ class ProductQueries {
     try {
       return await Products.query(db).count().where("status", "<>", "99");
     } catch (error) {
-      console.log(error);
-      return;
+      return error;
     }
   }
 
@@ -155,7 +113,6 @@ class ProductQueries {
         .select("product_id")
         .where("product_name", "=", productName);
     } catch (error) {
-      console.log(error);
       return;
     }
   }
@@ -168,14 +125,6 @@ class ProductQueries {
     unit,
     vendor_id,
   ) {
-    console.log(
-      productName,
-      category_id,
-      unit_price,
-      quantity,
-      unit,
-      vendor_id,
-    );
     const trx = await db.transaction();
     try {
       const product_id = await Products.query(trx).insert({
@@ -185,7 +134,6 @@ class ProductQueries {
         unit: unit,
         unit_price: parseInt(unit_price),
       });
-      console.log(product_id.product_id);
       for (let i = 0; i < vendor_id.length; i++) {
         try {
           await ProductToVendor.query(trx).insert({
@@ -193,7 +141,6 @@ class ProductQueries {
             product_id: product_id.product_id,
           });
         } catch (error) {
-          console.log(error);
           await trx.rollback();
         }
       }
@@ -202,7 +149,6 @@ class ProductQueries {
       return [product_id.product_id];
     } catch (error) {
       await trx.rollback();
-      console.log(error);
       return error;
     }
   }
@@ -242,7 +188,6 @@ class ProductQueries {
               product_id: productId,
             });
           } catch (error) {
-            console.log(error);
             await trx.rollback();
           }
         }
@@ -266,7 +211,6 @@ class ProductQueries {
       return;
     } catch (error) {
       await trx.rollback();
-      console.log(error);
       return error;
     }
   }
@@ -278,7 +222,6 @@ class ProductQueries {
         .patch({ product_image: product_image })
         .where("product_id", "=", product_id);
     } catch (error) {
-      console.log(error);
       return error;
     }
   }
@@ -290,7 +233,7 @@ class ProductQueries {
         .where("vendor_name", "=", vendor_name);
       return vendor_id[0].vendor_id;
     } catch (error) {
-      next(new Error(error));
+      return error;
     }
   }
 
@@ -303,7 +246,6 @@ class ProductQueries {
         .select("quantity_in_stock")
         .where("product_id", "=", product_id);
     } catch (error) {
-      console.log(error);
       return error;
     }
   }
@@ -334,7 +276,7 @@ class ProductQueries {
       return;
     } catch (error) {
       await trx.rollback();
-      console.log(error);
+      return error;
     }
   }
 }

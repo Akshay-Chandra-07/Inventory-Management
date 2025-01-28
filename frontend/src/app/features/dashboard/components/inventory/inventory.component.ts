@@ -303,9 +303,18 @@ export class InventoryComponent implements OnInit {
   addProductsToMoveToCart(previous?: any) {
     if (this.allProductsSelected) {
       const data = this.tempcartService.fetchTempcartData();
-      if (!data || !data[this.inventoryData[0].product_id]) {
-        this.inventoryData.forEach((data: any) => {
-          this.tempcartService.modifyTempcart(data.product_id, data);
+      if (!data){
+        this.inventoryData.forEach((product: any) => {
+          if(product.quantity_in_stock > 0){
+            this.tempcartService.modifyTempcart(product.product_id, product);
+          }
+        });
+      }else{
+        this.inventoryData.forEach((product: any) => {
+          if(!data[product.product_id])
+            if(product.quantity_in_stock>0){
+              this.tempcartService.modifyTempcart(product.product_id, product);
+            }
         });
       }
     }
@@ -628,6 +637,7 @@ export class InventoryComponent implements OnInit {
     if (this.moveToCartAllSelected) {
       for (let key of Object.keys(this.moveToCartData!)) {
         if (!this.moveToCartData![key].selected) {
+          console.log("selecting",key,this.moveToCartData![key])
           this.onChangeModalCheckbox(key);
         }
       }

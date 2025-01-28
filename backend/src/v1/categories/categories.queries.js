@@ -9,8 +9,7 @@ class CategoriesQueries {
         .where("category_name", "=", category_name);
       return category_id[0].category_id;
     } catch (error) {
-      console.log(error);
-      return;
+      return error;
     }
   }
   static async getAllCategories() {

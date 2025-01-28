@@ -57,12 +57,12 @@ export class TempcartService {
             this.tempCartData[key].quantity_in_stock = newQuantity;
             this.preFinalCartData[key] = this.tempCartData[key];
             console.log(this.preFinalCartData);
-            this.tempCartData = {};
             this.updateFinalCart(this.preFinalCartData);
           },
         });
       }
     }
+    // this.tempCartData = {}
   }
 
   increaseTempCartQuantity(id: any) {

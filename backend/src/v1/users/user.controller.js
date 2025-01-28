@@ -1,4 +1,4 @@
-const fs = require("fs");
+// const fs = require("fs");
 const { uploadFile, getPresignedUrl } = require("../../aws/s3/s3Uploader");
 const userQueries = require("./user.queries");
 const {
@@ -11,7 +11,6 @@ exports.updateUrlToDb = async (req, res, next) => {
   const userId = req.userId;
   const validated = validateUpdateUrlSchema({ profilePictureUrl, userId });
   if (validated.error) {
-    console.log(validated.error.message);
     return res.status(400).json({ msg: validated.error.message });
   }
   try {
@@ -21,7 +20,6 @@ exports.updateUrlToDb = async (req, res, next) => {
     );
     res.status(201).json({ msg: "Profile picture uploaded" });
   } catch (error) {
-    console.log(error);
     res.status(400).json({ msg: "Error uploading url to db" });
   }
 };
@@ -38,7 +36,6 @@ exports.uploadFileToDb = async (req, res, next) => {
     user_id,
   });
   if (validated.error) {
-    console.log(validated.error.message);
     return res.status(400).json({ msg: validated.error.message });
   }
   try {
@@ -51,7 +48,6 @@ exports.uploadFileToDb = async (req, res, next) => {
     );
     res.status(201).json({ msg: "File uploaded" });
   } catch (error) {
-    console.log(error);
     res.status(400).json({ msg: "Error uploading url to db" });
   }
 };
@@ -61,7 +57,6 @@ exports.getUserFiles = async (req, res, next) => {
     const userFiles = await userQueries.getUserFiles(req.userId);
     res.status(200).json({ msg: "Fetched all files of user", userFiles });
   } catch (error) {
-    console.log(error);
     res.status(400).json({ msg: "Error fetching files" });
   }
 };
@@ -71,7 +66,6 @@ exports.getUserData = async (req, res, next) => {
     const user = await userQueries.getUserData(req.userId);
     res.status(200).json({ msg: "User details fetched", user });
   } catch (error) {
-    console.log(error);
     res.status(400).json({ msg: "Error fetching user data" });
   }
 };
@@ -85,7 +79,6 @@ exports.getUrl = async (req, res, next) => {
     const url = await getPresignedUrl(bucketName, fileKey, fileType);
     res.status(201).json({ msg: "Presigned Url generated", url, fileKey });
   } catch (error) {
-    console.log(error);
     res.status(400).json({ msg: "Error generating presigned url" });
   }
 };

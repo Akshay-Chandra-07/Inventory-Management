@@ -10,6 +10,9 @@ const {
 
 const { validateUserCreation } = require("./dto/userCreation.dto");
 const { validateUserLogin } = require("./dto/userLogin.dto");
+const { validateForgotPasswordSchema } = require("./dto/forgorPassword.dto");
+const { resetTokenGenerator } = require("../../utils/reset_token_generator");
+const { validateResetToken } = require("../../utils/validate_reset_token");
 
 exports.register = async (req, res, next) => {
   const validated = validateUserCreation(req.body);
@@ -67,7 +70,6 @@ exports.login = async (req, res, next) => {
         return res.status(200).json({
           msg: "User logged in!",
           accessToken: accessToken,
-          refreshToken: refreshToken,
         });
       } else {
         return res.status(400).json({ msg: "Invalid Password" });
@@ -81,3 +83,38 @@ exports.login = async (req, res, next) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 };
+
+exports.forgotPassword = async (req,res,next)=>{
+  const {email} = req.body;
+  // const validated = validateForgotPasswordSchema(email)
+  // if(validated.error){
+  //   return res.status(401).json({msg:validated.error.message})
+  // }
+  const bool = await authQueries.checkUser(email)
+  if(bool[0].user_id){
+    const reset_token = resetTokenGenerator(bool[0].user_id)
+    const clientUrl = process.env.CLIENT_URL
+    const resetLink = `${clientUrl}?token=${reset_token}&email=${email}`
+    const mailDetails = {
+      from : process.env.EMAIL,
+      to : email,
+      subject : "Password reset link",
+      text : `Click to reset password : ${resetLink}`
+    }
+    authService.sendEmail(mailDetails)
+    return res.status(200).json({msg:"Email sent"})
+  }else{
+    return res.status(400).json({msg:"error"})
+  }
+}
+
+exports.resetPassword = async(req,res,next)=>{
+  const {password,token} = req.body
+  const user_id = validateResetToken(token)
+  if(user_id){
+    const hashedPassword = await authService.passwordHashing(password)
+    await authQueries.updateUserPassword(hashedPassword,user_id)
+    return res.status(200).json({msg:"Password updated successfully"})
+  }
+  return res.status(401).json({msg:"Cannot update password"})
+}

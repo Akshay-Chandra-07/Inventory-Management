@@ -22,7 +22,6 @@ exports.getPageProducts = async (req, res, next) => {
     searchFilters,
   });
   if (validated.error) {
-    console.log(validated.error.message);
     return res.status(400).json({ msg: validated.error.message });
   }
   try {
@@ -41,7 +40,6 @@ exports.getPageProducts = async (req, res, next) => {
       .status(200)
       .json({ msg: "All products fetched", cleanedProducts });
   } catch (error) {
-    console.log(error);
     return res.status(400).json({ msg: "Error fetching files" });
   }
 };
@@ -51,7 +49,6 @@ exports.getAllProducts = async (req, res, next) => {
     const data = await ProductQueries.getAllProducts();
     return res.status(200).json(data);
   } catch (error) {
-    console.log(error);
     res.status(400).json({ msg: "error fetching products" });
   }
 };
@@ -62,7 +59,6 @@ exports.getProductCount = async (req, res, next) => {
 
     res.status(200).json(count);
   } catch (error) {
-    console.log(error);
     res.status(400).json({ msg: "Error fetching count" });
   }
 };
@@ -85,7 +81,6 @@ exports.insertProductData = async (req, res, next) => {
     unit,
   });
   if (productValidation.error) {
-    console.log(productValidation.error.message);
     return res.status(400).json({ msg: productValidation.error.message });
   }
   try {
@@ -112,7 +107,6 @@ exports.insertProductData = async (req, res, next) => {
       unit,
     });
     if (productValidation.error) {
-      console.log(productValidation.error.message);
       return res.status(400).json({ msg: productValidation.error.message });
     }
     const productId = await productsQueries.insertProductDataToDb(
@@ -125,7 +119,6 @@ exports.insertProductData = async (req, res, next) => {
     );
     return res.status(201).json({ msg: "Product created", productId });
   } catch (error) {
-    console.log(error);
     return res.status(400).json({ msg: "Error creating product" });
   }
 };
@@ -150,7 +143,6 @@ exports.updateProductData = async (req, res, next) => {
     productId,
   });
   if (validated.error) {
-    console.log(validated.error.message);
     return res.status(400).json({ msg: validated.error.message });
   }
   let vendor_id = [];
@@ -187,17 +179,14 @@ exports.updateProductData = async (req, res, next) => {
 exports.insertProductUrlToTable = async (req, res, next) => {
   const product_image = process.env.s3_URL + req.body.url;
   const product_id = req.body.product_id[0];
-  console.log("logging here", product_image, product_id);
   const validated = validateProductUrlSchema({ product_image, product_id });
   if (validated.error) {
-    console.log(validated.error.message);
     return res.status(400).json({ msg: validated.error.message });
   }
   try {
     await ProductQueries.insertProductUrlToTable(product_image, product_id);
     res.status(201).json({ msg: "Product Image inserted successfully" });
   } catch (error) {
-    console.log(error);
     res.status(400).json({ msg: "Error uploading image url" });
   }
 };
@@ -206,7 +195,6 @@ exports.updateQuantityInTable = async (req, res, next) => {
   const { p_id, newQuantity } = req.body;
   const validated = validateUpdateQuantitySchema({ p_id, newQuantity });
   if (validated.error) {
-    console.log(validated.error.message);
     return res.status(400).json({ msg: validated.error.message });
   }
   try {
@@ -224,7 +212,6 @@ exports.deleteSingleProduct = async (req, res, next) => {
   const { product_id } = req.body;
   const validated = validateDeleteProductSchema({ product_id });
   if (validated.error) {
-    console.log(validated.error.message);
     return res.status(400).json({ msg: validated.error.message });
   }
   try {
@@ -239,14 +226,12 @@ exports.insertExcelProducts = async (req, res, next) => {
   const { data } = req.body;
   const validated = validateExcelDataSchema({ data });
   if (validated.error) {
-    console.log(validated.error.message);
     return res.status(400).json({ msg: validated.error.message });
   }
   try {
     await productsQueries.insertAllProducts(data);
     return res.status(201).json({ msg: "Products inserted successfully" });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };

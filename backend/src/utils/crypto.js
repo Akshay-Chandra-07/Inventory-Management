@@ -14,5 +14,6 @@ exports.decrypt = (cipher) => {
     process.env.ENCRYPTION_KEY,
   );
   const decrypted = decrypted_bytes.toString(crypto.enc.Utf8);
+  console.log(decrypted)
   return decrypted;
 };

@@ -17,7 +17,6 @@ class AuthQueries {
       });
       return true;
     } catch (error) {
-      console.log(error);
       return error;
     }
   }
@@ -29,7 +28,6 @@ class AuthQueries {
       .orWhere("username", "=", user);
   }
   static async setRefreshToken(id, token) {
-    console.log("setting token ", token);
     return await Users.query(db)
       .patch({ refresh_token: token })
       .where("user_id", "=", id);
@@ -39,10 +37,13 @@ class AuthQueries {
     const token = await Users.query(db)
       .select("refresh_token")
       .where("user_id", "=", id);
-    //  console.log("fetching token " ,token[0].refresh_token)
-    console.log("fetfching", token[0].refresh_token);
     return token[0].refresh_token;
   }
+
+  static async updateUserPassword(password,user_id){
+    return await Users.query(db).patch({password:password}).where("user_id",'=',user_id)
+  }
+  
 }
 
 module.exports = AuthQueries;
