@@ -10,11 +10,19 @@ import { NgToastService } from 'ng-angular-popup';
   styleUrls: ['./signup.component.css'],
 })
 export class SignupComponent implements OnInit {
+  
+  rolesAvailable:any | undefined;
   constructor(
     private router: Router,
     private signupService: SignupService,
     private toast: NgToastService,
-  ) {}
+  ) {
+    this.rolesAvailable = {
+      Admin:"3",
+      Manager:"2",
+      User:"1"
+    }
+  }
 
   ngOnInit(): void {
     sessionStorage.clear();
@@ -24,22 +32,17 @@ export class SignupComponent implements OnInit {
     firstName: new FormControl(''),
     lastName: new FormControl(''),
     email: new FormControl(''),
+    role: new FormControl(''),
     password: new FormControl(''),
   });
 
   onSignUpSubmit() {
-    console.log(
-      this.signUpForm.controls.firstName.value!,
-      this.signUpForm.controls.lastName.value!,
-      this.signUpForm.controls.email.value!,
-      this.signUpForm.controls.password.value!,
-    );
-
     this.signupService
       .registerUser(
         this.signUpForm.controls.firstName.value!,
         this.signUpForm.controls.lastName.value!,
         this.signUpForm.controls.email.value!,
+        this.rolesAvailable![this.signUpForm.controls.role.value!],
         this.signUpForm.controls.password.value!,
       )
       .pipe()

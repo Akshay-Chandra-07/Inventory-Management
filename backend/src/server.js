@@ -65,10 +65,8 @@ const server = app.listen(PORT, () => {
 });
 require('./utils/socket_config').initializeSocket(server)
 
-cron.schedule('*/30 * * * * *', async() => {
-  const result = await excelDataProcessor();
-  console.log('Running a task:', new Date());
-  console.log(result)
+cron.schedule('*/10 * * * * ', () => {
+  excelDataProcessor();
 } );
 
 const scheduleFun = async() => {

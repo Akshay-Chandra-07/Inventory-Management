@@ -16,6 +16,7 @@
         <button
           class="btn btn-sm btn-outline-dark ms-1"
           (click)="downloadExcel()"
+          *ngIf="this.role == 2 || this.role == 3"
         >
           Download all
         </button>
@@ -23,6 +24,7 @@
           class="btn btn-sm btn-outline-dark ms-1"
           data-bs-toggle="modal"
           data-bs-target="#importFileModal"
+          *ngIf="this.role == 3"
         >
           Import
         </button>
@@ -30,6 +32,7 @@
           class="btn btn-sm btn-primary ms-1"
           data-bs-toggle="modal"
           data-bs-target="#addProductModal"
+          *ngIf="this.role == 3"
         >
           + Add product
         </button>
@@ -256,6 +259,7 @@
               class="btn px-1"
               src="../../../../../assets/logos/download-logo.svg"
               (click)="onDownloadRow(data)"
+              *ngIf="this.role == 2 || this.role == 3"
             />
             <img
               class="btn px-1"
@@ -263,11 +267,13 @@
               data-bs-toggle="modal"
               data-bs-target="#editProductModal"
               (click)="onEditingProduct(data)"
+              *ngIf="this.role == 2 || this.role == 3"
             />
             <img
               class="btn px-1"
               src="../../../../../assets/logos/delete-logo.svg"
               (click)="onDeleteProduct(data.product_id)"
+              *ngIf="this.role == 3"
             />
           </td>
         </tr>

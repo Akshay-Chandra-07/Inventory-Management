@@ -37,8 +37,10 @@ export class LoginComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data: any) => {
+          console.log(data)
           sessionStorage.setItem('accesstoken', data.accessToken!);
-          sessionStorage.setItem('refreshtoken', data.refreshToken!);
+          sessionStorage.setItem('role', data.role!);
+          sessionStorage.setItem('refreshtoken',data.refreshtoken!)
           this.toast.success({ detail: data.msg, duration: 2000 });
           this.router.navigateByUrl('/dashboard/home');
         },

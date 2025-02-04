@@ -6,12 +6,13 @@ class AuthQueries {
     return await Users.query(db).select("user_id").where("email", "=", email);
   }
 
-  static async register(first_name, last_name, email, username, password) {
+  static async register(first_name, last_name, email,role, username, password) {
     try {
       await Users.query(db).insert({
         first_name,
         last_name,
         email,
+        role,
         username,
         password,
       });
@@ -23,7 +24,7 @@ class AuthQueries {
 
   static async checkCredentials(user) {
     return await Users.query(db)
-      .select("user_id", "username", "email", "password")
+      .select("user_id", "username", "email", "password","role")
       .where("email", "=", user)
       .orWhere("username", "=", user);
   }

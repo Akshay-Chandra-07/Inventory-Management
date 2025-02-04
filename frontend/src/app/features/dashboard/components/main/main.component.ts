@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CryptoService } from 'src/app/core/services/crypto.service';
 
 @Component({
   selector: 'app-main',
@@ -8,9 +9,13 @@ import { Component, OnInit } from '@angular/core';
 export class MainComponent implements OnInit {
   requiredComponent = "Inventory"
 
-  constructor() {}
+  constructor(private cryptoService:CryptoService) {
+    
+  }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    
+  }
 
   onToggle(name: string) {
     this.requiredComponent = name

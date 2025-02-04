@@ -11,6 +11,7 @@ import { downloadExcel } from '../../../../core/utils/downloadExcel';
 import { importFile } from 'src/app/core/utils/importExcel';
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { CryptoService } from 'src/app/core/services/crypto.service';
 
 @Component({
   selector: 'app-inventory',
@@ -33,6 +34,7 @@ export class InventoryComponent implements OnInit {
   isDragging = false;
   productsInCart: any;
   vendorColors: Record<string, string> = {};
+  role : any;
 
   moveToCartQuantityProducts: any;
 
@@ -61,6 +63,7 @@ export class InventoryComponent implements OnInit {
     private toast: NgToastService,
     private errorHandler: ErrorHandlerService,
     private sanitizer: DomSanitizer,
+    private cryptoService : CryptoService
   ) {
     this.searchSubject
       .pipe(debounceTime(500))
@@ -110,6 +113,7 @@ export class InventoryComponent implements OnInit {
     this.fetchPageProducts();
     this.fetchCategories();
     this.fetchVendors();
+    this.role = this.cryptoService.getRole()['role']
   }
   toggleVendorSelection(i: any) {
     this.vendors[i].selected = !this.vendors[i].selected;

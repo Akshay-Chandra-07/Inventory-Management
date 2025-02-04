@@ -3,6 +3,7 @@ const Users = require("../../models/usersModel");
 const authService = require("./auth.service");
 const authQueries = require("./auth.queries");
 const bcrypt = require("bcryptjs");
+const {encryptRole} = require('../../utils/encryptRole')
 const { accessTokenGenerator } = require("../../utils/access_token_generator");
 const {
   refreshTokenGenerator,
@@ -16,7 +17,6 @@ const { validateResetToken } = require("../../utils/validate_reset_token");
 
 exports.register = async (req, res, next) => {
   const validated = validateUserCreation(req.body);
-  console.log(validated);
   if (validated.error) {
     console.log(validated.error.message);
     return res.status(400).json({ msg: validated.error.message });
@@ -31,6 +31,7 @@ exports.register = async (req, res, next) => {
       req.body.first_name,
       req.body.last_name,
       req.body.email,
+      req.body.role,
       username,
       password,
     );
@@ -61,8 +62,9 @@ exports.login = async (req, res, next) => {
         checkCredentials[0].password,
       );
       if (boolPassword) {
-        const accessToken = accessTokenGenerator(checkCredentials[0].user_id);
-        const refreshToken = refreshTokenGenerator(checkCredentials[0].user_id);
+        const accessToken = accessTokenGenerator(checkCredentials[0].user_id,checkCredentials[0].role);
+        const refreshToken = refreshTokenGenerator(checkCredentials[0].user_id,checkCredentials[0].role);
+        const encryptedRole = encryptRole(checkCredentials[0].role)
         await authQueries.setRefreshToken(
           checkCredentials[0].user_id,
           refreshToken,
@@ -70,6 +72,7 @@ exports.login = async (req, res, next) => {
         return res.status(200).json({
           msg: "User logged in!",
           accessToken: accessToken,
+          role : encryptedRole
         });
       } else {
         return res.status(400).json({ msg: "Invalid Password" });

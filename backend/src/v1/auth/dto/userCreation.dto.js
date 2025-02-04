@@ -21,6 +21,9 @@ const userCreationSchema = joi.object({
     "string.empty": "Password is requried",
     "string.min": "Password must be 3 characters",
   }),
+  role: joi.string().required().messages({
+    "string.empty": "Please select role"
+  })
 });
 
 const validateUserCreation = (data) => {

@@ -12,12 +12,14 @@ export class SignupService {
     first_name: string,
     last_name: string,
     email: string,
+    role: string,
     password: string,
   ) {
     return this._http.post(`${this.apiUrl}/auth/signup`, {
       first_name,
       last_name,
       email,
+      role,
       password,
     });
   }

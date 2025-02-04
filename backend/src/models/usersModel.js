@@ -24,6 +24,7 @@ class Users extends Model {
         email: { type: "string" },
         profile_url: { type: "string" },
         thumbnail: { type: "string" },
+        role : { type: "string"}
       },
     };
   }
