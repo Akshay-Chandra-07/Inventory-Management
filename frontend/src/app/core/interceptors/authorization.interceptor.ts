@@ -18,14 +18,12 @@ export class AuthorizationInterceptor implements HttpInterceptor {
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     const accessToken = sessionStorage.getItem('accesstoken');
-    const refreshToken = sessionStorage.getItem('refreshtoken');
     if (req.url.includes('s3.ap-south-1.amazonaws.com')) {
       return next.handle(req);
     }
     const newReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${accessToken}`,
-        Refresh: `${refreshToken}`,
       },
     });
     return next.handle(newReq).pipe(

@@ -15,5 +15,6 @@ router.post("/upload-file-to-db", validateToken, userController.uploadFileToDb);
 router.get("/get-files-of-user", validateToken, userController.getUserFiles);
 // router.post('/upload-profile-picture',validateToken,parseForm(),userController.uploadProfilePicture)
 router.get("/get-user-data", validateToken, userController.getUserData);
+router.get("/get-excel-product-files",validateToken,userController.getExcelProductFiles)
 
 module.exports = router;

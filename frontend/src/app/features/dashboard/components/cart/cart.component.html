@@ -16,6 +16,12 @@
         <button class="btn btn-sm btn-outline-dark custom-btn-2 status-grey">
           Cart
         </button>
+        <button
+          class="btn btn-sm btn-outline-dark custom-btn-2"
+          (click)="changeToExcelFilesComponent()"
+        >
+          Files
+        </button>
       </div>
       <div class="col-5 d-flex mx-2">
         <form [formGroup]="searchForm" class="w-100">

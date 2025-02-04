@@ -109,4 +109,9 @@ export class InventoryService {
       data,
     });
   }
+  
+  uploadFileUrlToDb(fileKey:any,purpose:any){
+    console.log(fileKey,purpose)
+    return this._http.post(`${this.apiUrl}/users/upload-file-to-db`,{fileKey,purpose})
+  }
 }

@@ -21,6 +21,10 @@ class Files extends Model {
         file_size: { type: "integer" },
         file_type: { type: "string" },
         file_image: { type: "string" },
+        error_file: { type: "string" },
+        purpose: { type: "string"},
+        total_rows : {type : "integer"},
+        accepted_rows : {type : "integer"}
       },
     };
   }

@@ -32,17 +32,22 @@ export class FilesService {
     file_name: string,
     file_type: string,
     file_size: string,
+    purpose : string
   ) {
-    console.log(url, file_name, file_type, file_size);
     return this._http.post(`${this.apiUrl}/users/upload-file-to-db`, {
       url,
       file_name,
       file_type,
       file_size,
+      purpose
     });
   }
 
   getUserFiles() {
     return this._http.get(`${this.apiUrl}/users/get-files-of-user`);
+  }
+
+  getExcelProductFiles(){
+    return this._http.get(`${this.apiUrl}/users/get-excel-product-files`)
   }
 }

@@ -6,13 +6,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./main.component.css'],
 })
 export class MainComponent implements OnInit {
-  toggleComponents: boolean = true;
+  requiredComponent = "Inventory"
 
   constructor() {}
 
   ngOnInit(): void {}
 
-  onToggle(event: Event) {
-    this.toggleComponents = !this.toggleComponents;
+  onToggle(name: string) {
+    this.requiredComponent = name
   }
 }

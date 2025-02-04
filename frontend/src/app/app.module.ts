@@ -9,6 +9,7 @@ import { AuthorizationInterceptor } from './core/interceptors/authorization.inte
 import { NgToastModule } from 'ng-angular-popup';
 import { ErrorHandlerService } from './core/services/error-handler.service';
 import { ErrorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
+import { CustomDatePipe } from './core/pipes/custom-date.pipe';
 
 @NgModule({
   declarations: [AppComponent],

@@ -1,0 +1,151 @@
+<div class="container-fluid d-flex flex-column" style="max-height: fit-content;">
+    <div class="row pt-3">
+        <div>
+          <h6>Excel product files</h6>
+        </div>
+    </div>
+    <div class="row">
+      <div class="container-fluid d-flex justify-content-between m-2">
+        <div>
+          <button class="btn btn-sm btn-outline-dark custom-btn-1"
+            (click)="changeToInventoryComponent()"
+            >
+            View all
+          </button>
+          <button
+            class="btn btn-sm btn-outline-dark custom-btn-1 custom-btn-2"
+            (click)="changeToCartComponent()"
+          >
+            Cart
+          </button>
+          <button
+            class="btn btn-sm btn-outline-dark custom-btn-2 status-grey"
+            
+          >
+            Files
+          </button>
+        </div>
+        <!-- <div class="col-5 d-flex mx-2">
+          <form [formGroup]="searchForm" class="w-100">
+            <input
+              class="form-control form-control-sm mr-sm-2"
+              type="search"
+              formControlName="inputValue"
+              (keyup)="onSearch($event)"
+              placeholder="Search"
+            />
+          </form>
+          <div class="dropdown">
+            <button
+              class="btn btn-sm dropdown-toggle border"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <img src="../../../../../assets/logos/filter.svg" alt="" />
+              Filter
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <input
+                  type="checkbox"
+                  class="btn ms-2"
+                  (click)="onAddSearchFilter('ProductName')"
+                />
+                Product Name
+              </li>
+              <li>
+                <input
+                  type="checkbox"
+                  class="btn ms-2"
+                  (click)="onAddSearchFilter('Category')"
+                />
+                Category
+              </li>
+              <li>
+                <input
+                  type="checkbox"
+                  class="btn ms-2"
+                  (click)="onAddSearchFilter('Vendor')"
+                />
+                Vendor
+              </li>
+            </ul>
+          </div>
+        </div> -->
+      </div>
+    </div>
+
+    <div  class="row d-flex flex-grow-1 table-responsive" style="max-height: 70vh; overflow-x: hidden">
+        <table class="table" >
+            <thead class="table-light border">
+                <tr>
+                    <td>
+                        <p class="table-head-p">Filename</p>
+                    </td>
+                    <td>
+                        <p class="table-head-p">Date</p>                        
+                    </td>
+                    <td>
+                        <p class="table-head-p">Status</p>                        
+                    </td>
+                    <td>
+                        <p class="table-head-p">Count</p>                        
+                    </td>
+                    <td>
+                        <p class="table-head-p">Report</p>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let data of excelProductFiles;let i =index">
+                    <td>
+                        <p class="ps-2 py-0 text-small">
+                            {{data.file_name}}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="ps-2 py-0 text-small">
+                            {{data.created_at | customDate}}
+                        </p>
+                    </td>
+                    <td *ngIf="data.status =='0'">
+                        <p class="py-1 text-small text-center rounded status-grey">
+                            Created
+                        </p>
+                    </td>
+                    <td *ngIf="data.status =='1'">
+                        <p class="py-1 text-small text-center rounded status-blue">
+                            Processing
+                        </p>
+                    </td>
+                    <td *ngIf="data.status =='2'">
+                        <p class="py-1 text-small text-center rounded status-green">
+                            Completed
+                        </p>
+                    </td>
+                    <td *ngIf="data.accepted_rows && data.total_rows">
+                        <p class="ps-2 py-0 text-small">
+                            {{data.accepted_rows}}/{{data.total_rows}}
+                        </p>
+                    </td>
+                    <td *ngIf="!data.accepted_rows || !data.total_rows">
+                      <p class="ps-2 py-0 text-small">
+                        Unavailable
+                      </p>
+                    </td>
+                    <td *ngIf="data.error_file && data.status=='2'">
+                        <a [href]="data.error_file"><button class="btn btn-sm btn-primary">
+                            Download Report
+                        </button></a>
+                    </td>
+                    <td *ngIf="!data.error_file && data.status=='2' ">
+                        <button class="btn btn-sm btn-secondary">
+                            No Errors
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

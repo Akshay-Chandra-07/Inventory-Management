@@ -1,5 +1,6 @@
 const { Model } = require("objection");
 const Files = require("./filesModel");
+const Notifications = require("./notificationModel");
 
 class Users extends Model {
   static get tableName() {
@@ -33,10 +34,18 @@ class Users extends Model {
         relation: Model.HasManyRelation,
         modelClass: Files,
         join: {
-          from: "user_id",
+          from: "users.user_id",
           to: "files.user_id",
         },
       },
+      notification : {
+        relation : Model.HasManyRelation,
+        modelClass : Notifications,
+        join : {
+          from : "users.user_id",
+          to : "notifications.user_id"
+        }
+      }
     };
   }
 }

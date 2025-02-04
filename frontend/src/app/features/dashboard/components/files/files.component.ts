@@ -81,6 +81,7 @@ export class FilesComponent implements OnInit {
                     fileName,
                     fileType,
                     fileSize,
+                    "0"
                   )
                   .pipe()
                   .subscribe({

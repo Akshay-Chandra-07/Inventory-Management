@@ -15,20 +15,26 @@ class userQueries {
       .where("user_id", "=", id);
   }
 
-  static async uploadFile(file_name, file_size, file_type, file_url, user_id) {
+  static async uploadFile(file_name, file_size, file_type, file_url, user_id,purpose) {
     return await Files.query(db).insert({
       file_name,
       file_size,
       file_type,
       file_url,
       user_id,
+      purpose,
     });
   }
 
   static async getUserFiles(user_id) {
     return await Files.query(db)
       .select("file_id", "file_name", "file_size", "file_type", "file_url")
-      .where("user_id", "=", user_id);
+      .where("user_id", "=", user_id).andWhere("purpose","=","0");
+  }
+  static async getExcelProductFiles(user_id){
+    return await Files.query(db)
+      .select("file_id", "file_name", "file_size", "file_type", "file_url","created_at","error_file","status","total_rows","accepted_rows")
+      .where("user_id", "=", user_id).andWhere("purpose","=","1");
   }
 }
 

@@ -15,6 +15,7 @@ const updateFileSchema = joi.object({
   file_type: joi.string().required(),
   file_url: joi.string().required(),
   user_id: joi.number().required(),
+  purpose : joi.string()
 });
 
 const validateUpdateFileSchema = (data) => {

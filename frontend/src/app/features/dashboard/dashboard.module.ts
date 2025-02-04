@@ -10,6 +10,9 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CartComponent } from './components/cart/cart.component';
+import { ImportProductsComponent } from './components/import-products/import-products.component';
+import { CustomDatePipe } from 'src/app/core/pipes/custom-date.pipe';
+import { NotificationComponent } from './components/notification/notification.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +22,9 @@ import { CartComponent } from './components/cart/cart.component';
     MainComponent,
     ProfileComponent,
     CartComponent,
+    ImportProductsComponent,
+    CustomDatePipe,
+    NotificationComponent
   ],
   imports: [
     CommonModule,

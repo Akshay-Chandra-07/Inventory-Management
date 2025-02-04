@@ -6,7 +6,7 @@
     aria-expanded="false"
   >
     <div class="profile-content">
-      <div class="part-1">
+      <div class="part-1" *ngIf="userData">
         <div *ngIf="userData.profile_pic">
           <img [src]="userData.profile_pic" alt="" />
         </div>

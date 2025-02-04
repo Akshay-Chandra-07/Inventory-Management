@@ -49,7 +49,7 @@ export class InventoryComponent implements OnInit {
     searchFilter: string[];
   }>();
 
-  @Output() toggler = new EventEmitter<any>();
+  @Output() toggler = new EventEmitter<string>();
 
   categories: string[] = [];
   vendors: any[] = [];
@@ -421,9 +421,10 @@ export class InventoryComponent implements OnInit {
       });
   }
 
-  uploadFile(productId: any) {
+  uploadFile(productId?: any) {
     const fileName = this.file!.name.replace(/\s+/g, '');
     const fileType = this.file!.type;
+    const fileSize = this.file!.size;
     this.filesService
       .getPresignedUrl(fileName, fileType)
       .pipe()
@@ -436,22 +437,47 @@ export class InventoryComponent implements OnInit {
             .subscribe({
               next: (data3: any) => {
                 console.log('uploaded image to s3');
-                this.inventoryService
-                  .uploadProductImageToDb(data2.fileKey, productId)
-                  .pipe()
-                  .subscribe({
-                    next: (data3: any) => {
-                      console.log(data3);
-                      this.toast.success({
-                        detail: 'Uploaded product image to db',
-                      });
-                      this.file = undefined;
-                      this.onSearch();
+                if(fileType.includes('image')){
+                  console.log("uploading image")
+                  this.inventoryService
+                    .uploadProductImageToDb(data2.fileKey, productId)
+                    .pipe()
+                    .subscribe({
+                      next: (data4: any) => {
+                        console.log(data4);
+                        this.toast.success({
+                          detail: 'Uploaded product image to db',
+                        });
+                        this.file = undefined;
+                        this.onSearch();
+                      },
+                      error: (error: any) => {
+                        this.errorHandler.handleError(error);
+                      },
+                    });
+                }else{
+                  console.log("uploading excel")
+                  this.filesService.uploadFileDataToDb(data2.fileKey,
+                    fileName,
+                    fileType,
+                    fileSize,
+                    "1"
+                  ).subscribe({
+                    next: (data4: any) => {
+                      console.log(data4);
+                      this.toast.success({ detail: data4.msg, duration: 2000 });
                     },
                     error: (error: any) => {
+                      console.log(error)
+                      this.toast.error({
+                        detail: error.error.msg,
+                        duration: 2000,
+                      });
                       this.errorHandler.handleError(error);
-                    },
-                  });
+                    }
+                  })
+
+                }
               },
               error: (error) => {
                 this.errorHandler.handleError(error);
@@ -510,7 +536,12 @@ export class InventoryComponent implements OnInit {
   changeToCartComponent() {
     this.moveToCartData = {};
     this.allProductsSelected = false;
-    this.toggler.emit('changing');
+    this.toggler.emit('Cart');
+  }
+  changeToExcelFilesComponent(){
+    this.moveToCartData = {}
+    this.allProductsSelected = false;
+    this.toggler.emit("Files")
   }
 
   onSearch(event?: Event) {
@@ -530,6 +561,7 @@ export class InventoryComponent implements OnInit {
       searchValue: this.searchForm.value.inputValue!,
       searchFilter: selectedCategoryList,
     });
+    
   }
 
   onAddSearchFilter(filterName: string) {

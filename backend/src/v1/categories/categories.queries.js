@@ -15,6 +15,10 @@ class CategoriesQueries {
   static async getAllCategories() {
     return await Categories.query(db).select("category_name");
   }
+
+  static async getAllCategoriesWithId(){
+    return await Categories.query(db).select("category_id","category_name")
+  }
 }
 
 module.exports = CategoriesQueries;

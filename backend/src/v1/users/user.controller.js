@@ -5,6 +5,7 @@ const {
   validateUpdateFileSchema,
   validateUpdateUrlSchema,
 } = require("./dto/user.dto");
+const FileQueries = require("../files/files.queries");
 
 exports.updateUrlToDb = async (req, res, next) => {
   const profilePictureUrl = process.env.s3_URL + req.body.url;
@@ -26,6 +27,10 @@ exports.updateUrlToDb = async (req, res, next) => {
 
 exports.uploadFileToDb = async (req, res, next) => {
   const { url, file_type, file_name, file_size } = req.body;
+  const {purpose} = req.body
+  if(!purpose){
+    purpose = "0"
+  }
   const user_id = req.userId;
   const file_url = process.env.s3_URL + url;
   const validated = validateUpdateFileSchema({
@@ -34,7 +39,9 @@ exports.uploadFileToDb = async (req, res, next) => {
     file_type,
     file_url,
     user_id,
+    purpose
   });
+  
   if (validated.error) {
     return res.status(400).json({ msg: validated.error.message });
   }
@@ -45,6 +52,7 @@ exports.uploadFileToDb = async (req, res, next) => {
       file_type,
       file_url,
       user_id,
+      purpose
     );
     res.status(201).json({ msg: "File uploaded" });
   } catch (error) {
@@ -82,3 +90,12 @@ exports.getUrl = async (req, res, next) => {
     res.status(400).json({ msg: "Error generating presigned url" });
   }
 };
+
+exports.getExcelProductFiles = async (req,res,next)=>{
+  try{
+    const excelProductFiles = await userQueries.getExcelProductFiles(req.userId)
+    return res.status(200).json(excelProductFiles)
+  }catch(error){
+    return res.status(400).json({msg:"Error fetching excel product files"})
+  }
+}

@@ -24,7 +24,7 @@ export class CartComponent implements OnInit, OnDestroy {
     productId: string;
     newQuantity: number;
   }>();
-  @Output() toggler = new EventEmitter<any>();
+  @Output() toggler = new EventEmitter<string>();
   constructor(
     private tempCartService: TempcartService,
     private inventoryService: InventoryService,
@@ -119,7 +119,10 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   changeToInventoryComponent() {
-    this.toggler.emit();
+    this.toggler.emit("Inventory");
+  }
+  changeToExcelFilesComponent(){
+    this.toggler.emit("Files")
   }
 
   deleteFromTempcartData(i: any, product_id: any) {

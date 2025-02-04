@@ -48,6 +48,12 @@
         >
           Cart
         </button>
+        <button 
+          class="btn btn-sm btn-outline-dark custom-btn-2"
+          (click)="changeToExcelFilesComponent()"
+        >
+          Files
+        </button>
       </div>
       <div class="col-5 d-flex mx-2">
         <form [formGroup]="searchForm" class="w-100">
@@ -860,7 +866,7 @@
           type="submit"
           class="btn btn-primary"
           data-bs-dismiss="modal"
-          (click)="onImportFile()"
+          (click)="uploadFile()"
           [disabled]="!this.file"
         >
           Import Products

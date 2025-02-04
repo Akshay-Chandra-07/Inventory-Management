@@ -20,6 +20,43 @@ class ProductQueries {
       return error;
     }
   }
+  
+  static async bulkInsert(products){
+    const trx =await db.transaction()
+      try{
+        const insertedProducts = await trx.batchInsert('products', products.map(row => {
+          return {
+            product_name: row.product_name,
+            category_id: row.category_id,
+            quantity_in_stock: row.quantity_in_stock,
+            unit: row.unit,
+            unit_price: row.unit_price
+          };
+        }), 1000);
+        const firstId = insertedProducts[0]
+        const allInsertedProducts = await Products.query().select("product_id").where('product_id', '>=', firstId).limit(products.length);
+        let productToVendor = []
+        allInsertedProducts.forEach((product, i) => {
+          const vendors = products[i].vendors; 
+          vendors.forEach((vendor_id) => {
+            productToVendor.push({
+              product_id: product.product_id, 
+              vendor_id: vendor_id
+            });
+          });
+        });
+        if (productToVendor.length > 0) {
+          await trx.batchInsert('product_to_vendor', productToVendor, 1000);
+        }
+        await trx.commit()
+        return true
+      }catch(error){
+        console.log(error)
+        await trx.rollback()
+        return false
+      }
+}
+  
 
   static async getPageProducts(
     pageNumber,
@@ -276,6 +313,31 @@ class ProductQueries {
       return;
     } catch (error) {
       await trx.rollback();
+      return error;
+    }
+  }
+
+  static async addProductData(curRow,category_id,validVendors){
+    const trx = await db.transaction()
+    try{
+      const product_id = await Products.query(trx).insert({
+        product_name: curRow['product_name'],
+        category_id: category_id,
+        quantity_in_stock: curRow['quantity_in_stock'],
+        unit_price: curRow['unit_price'],
+        unit: curRow['unit'],
+      });
+      for(let i=0;i<validVendors.length;i++){
+        await ProductToVendor.query(trx).insert({
+          product_id: product_id.product_id,
+          vendor_id: validVendors[i],
+        })
+      }
+      trx.commit()
+      return;
+    }catch(error){
+      console.log(error)
+      await trx.rollback()
       return error;
     }
   }
