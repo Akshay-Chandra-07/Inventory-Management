@@ -548,6 +548,12 @@ export class InventoryComponent implements OnInit {
     this.toggler.emit("Files")
   }
 
+  changeToChatsComponent(){
+    this.moveToCartData = {}
+    this.allProductsSelected = false;
+    this.toggler.emit("Chats")
+  }
+
   onSearch(event?: Event) {
     const selectedCategoryList = [];
     if (this.searchFilters.category) {

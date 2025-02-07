@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
           console.log(data)
           sessionStorage.setItem('accesstoken', data.accessToken!);
           sessionStorage.setItem('role', data.role!);
+          sessionStorage.setItem('userId', data.userId!)
           sessionStorage.setItem('refreshtoken',data.refreshtoken!)
           this.toast.success({ detail: data.msg, duration: 2000 });
           this.router.navigateByUrl('/dashboard/home');

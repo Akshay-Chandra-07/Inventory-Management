@@ -11,6 +11,7 @@ import { debounceTime, Subject } from 'rxjs';
 import { InventoryService } from '../../services/inventory.service';
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
 import { FormControl, FormGroup } from '@angular/forms';
+import { CryptoService } from 'src/app/core/services/crypto.service';
 
 @Component({
   selector: 'app-cart',
@@ -20,6 +21,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 export class CartComponent implements OnInit, OnDestroy {
   cartData: Array<Product> | undefined;
   searchCart: Array<Product> | undefined;
+  role : any;
   private quantitySubject = new Subject<{
     productId: string;
     newQuantity: number;
@@ -29,6 +31,7 @@ export class CartComponent implements OnInit, OnDestroy {
     private tempCartService: TempcartService,
     private inventoryService: InventoryService,
     private errorHandler: ErrorHandlerService,
+    private cryptoService : CryptoService
   ) {
     this.quantitySubject
       .pipe(debounceTime(1000))
@@ -54,6 +57,7 @@ export class CartComponent implements OnInit, OnDestroy {
         this.cartData = JSON.parse(data);
       }
     }
+    this.role = this.cryptoService.getRole()['role']
   }
 
   searchForm = new FormGroup({
@@ -123,6 +127,9 @@ export class CartComponent implements OnInit, OnDestroy {
   }
   changeToExcelFilesComponent(){
     this.toggler.emit("Files")
+  }
+  changeToChatsComponent(){
+    this.toggler.emit("Chats")
   }
 
   deleteFromTempcartData(i: any, product_id: any) {

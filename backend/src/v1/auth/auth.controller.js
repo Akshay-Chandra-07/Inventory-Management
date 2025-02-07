@@ -14,6 +14,7 @@ const { validateUserLogin } = require("./dto/userLogin.dto");
 const { validateForgotPasswordSchema } = require("./dto/forgorPassword.dto");
 const { resetTokenGenerator } = require("../../utils/reset_token_generator");
 const { validateResetToken } = require("../../utils/validate_reset_token");
+const { encryptUserId } = require("../../utils/encryptUserId");
 
 exports.register = async (req, res, next) => {
   const validated = validateUserCreation(req.body);
@@ -65,6 +66,7 @@ exports.login = async (req, res, next) => {
         const accessToken = accessTokenGenerator(checkCredentials[0].user_id,checkCredentials[0].role);
         const refreshToken = refreshTokenGenerator(checkCredentials[0].user_id,checkCredentials[0].role);
         const encryptedRole = encryptRole(checkCredentials[0].role)
+        const encryptedUserId = encryptUserId(checkCredentials[0].user_id)
         await authQueries.setRefreshToken(
           checkCredentials[0].user_id,
           refreshToken,
@@ -72,7 +74,8 @@ exports.login = async (req, res, next) => {
         return res.status(200).json({
           msg: "User logged in!",
           accessToken: accessToken,
-          role : encryptedRole
+          role : encryptedRole,
+          userId: encryptedUserId
         });
       } else {
         return res.status(400).json({ msg: "Invalid Password" });

@@ -99,3 +99,13 @@ exports.getExcelProductFiles = async (req,res,next)=>{
     return res.status(400).json({msg:"Error fetching excel product files"})
   }
 }
+
+exports.getAllUsers = async (req,res,next)=>{
+  try{
+    const allUsers = await userQueries.getAllUsers(req.userId)
+    return res.status(200).json(allUsers)
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({msg:"Error fetching users"})
+  }
+}

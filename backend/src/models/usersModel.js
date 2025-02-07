@@ -1,6 +1,8 @@
 const { Model } = require("objection");
 const Files = require("./filesModel");
 const Notifications = require("./notificationModel");
+const Messages = require("./messagesModel");
+const ChatUser = require("./chat_userModel");
 
 class Users extends Model {
   static get tableName() {
@@ -46,6 +48,22 @@ class Users extends Model {
           from : "users.user_id",
           to : "notifications.user_id"
         }
+      },
+      messages : {
+        relation: Model.HasManyRelation,
+        modelClass : Messages,
+        join : {
+            from: "users.user_id",
+            to: "messages.user_id"
+        }
+      },
+      chats : {
+        relation : Model.HasManyRelation,
+        modelClass : ChatUser,
+        join : {
+          from: "users.user_id",
+          to : "chat_user.user_id"
+        } 
       }
     };
   }

@@ -14,4 +14,9 @@ export class CryptoService {
     const role = sessionStorage.getItem('role')
     return this.decryptData(role)
   }
+  getUserId(){
+    const userId = sessionStorage.getItem('userId')
+    console.log("in crypto",userId)
+    return this.decryptData(userId)
+  }
 }

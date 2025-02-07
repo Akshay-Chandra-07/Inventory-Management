@@ -46,14 +46,22 @@
           View all
         </button>
         <button
-          class="btn btn-sm btn-outline-dark custom-btn-2"
+          class="btn btn-sm btn-outline-dark custom-btn-3"
           (click)="changeToCartComponent()"
         >
           Cart
         </button>
+        <button
+          class="btn btn-sm btn-outline-dark"
+          [ngClass]="role == 3 ? 'custom-btn-3' : 'custom-btn-2'"          
+          (click)="changeToChatsComponent()"
+        >
+          Chats
+        </button>
         <button 
           class="btn btn-sm btn-outline-dark custom-btn-2"
           (click)="changeToExcelFilesComponent()"
+          *ngIf="this.role == 3"
         >
           Files
         </button>

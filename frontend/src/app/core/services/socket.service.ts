@@ -9,7 +9,6 @@ import { environment } from 'src/environments/environment';
 export class SocketService {
   socket: Socket
   constructor() { 
-    console.log(sessionStorage.getItem('accesstoken'))
     this.socket = io(environment.serverUrl,{
       auth:{
         accessToken : sessionStorage.getItem('accesstoken')
@@ -21,7 +20,6 @@ export class SocketService {
     this.socket.on("disconnect",()=>{
       console.log("Disconnected")
     })
-    console.log(this.socket)
   }
 
   onStatusUpdate():Observable<any>{
@@ -52,6 +50,46 @@ export class SocketService {
   reportUpdate(){
     return new Observable((observer)=>{
       this.socket.on('reportUpdate',(data:any)=>{
+        observer.next(data)
+      })
+    })
+  }
+
+  onSendMessage(message:string,user_id:number,username:string,chat_id:number){
+    this.socket.emit('sendMessage',{message:message,user_id:user_id,username:username,chat_id:chat_id})
+  }
+
+  onReceiveMessage(){
+    return new Observable((observer)=>{
+      this.socket.on('receiveMessage',(data:any)=>{
+        observer.next(data)
+      })
+    })
+  }
+
+  onJoinRoom(roomId:number){
+    this.socket.emit("onJoinRoom",{roomId:roomId})
+  }
+
+  onLeaveRoom(roomId:number){
+    this.socket.emit("onLeaveRoom",{roomId:roomId})
+  }
+
+  onSendGroupMessage(message:string,user_id:number,chat_id:number){
+    this.socket.emit("sendGroupMessage",{message:message,user_id:user_id,chat_id:chat_id})
+  }
+
+  onReceiveGroupMessage(){
+    return new Observable((observer)=>{
+      this.socket.on("receiveGroupMessage",(data:any)=>{
+        observer.next(data)
+      })
+    })
+  }
+
+  onMarkedChatAsRead(){
+    return new Observable((observer)=>{
+      this.socket.on("onMarkedChatAsRead",(data:any)=>{
         observer.next(data)
       })
     })

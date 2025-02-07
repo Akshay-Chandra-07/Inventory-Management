@@ -1,0 +1,48 @@
+.status-grey {
+  background-color: rgb(226, 226, 226);
+  color: rgb(54, 54, 54);
+}
+.custom-btn-1 {
+  border-radius: 5px 0 0 5px;
+}
+.custom-btn-2 {
+  border-radius: 0 5px 5px 0;
+}
+.custom-btn-3 {
+  border-radius: 0 0 0 0;
+}
+
+
+.message {
+  padding: 5px 7px;
+  border-radius: 5px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.left {
+  background-color: #f1f1f1;
+  align-self: flex-start;
+}
+
+.right {
+  background-color: blueviolet;
+  color: white;
+  align-self: flex-end;
+}
+
+p{
+  margin: 0;
+  padding: 0;
+}
+
+.message-text{
+  font-size: small;
+}
+.message-author{
+  font-size: xx-small;
+}
+
+.unread{
+  background-color: gainsboro;
+}

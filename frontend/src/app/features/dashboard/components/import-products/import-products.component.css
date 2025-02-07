@@ -18,6 +18,10 @@
   .custom-btn-2 {
     border-radius: 0 5px 5px 0;
   }
+  .custom-btn-3 {
+    border-radius: 0 0 0 0;
+  }
+  
 
   .table-head-p {
     margin: 0;

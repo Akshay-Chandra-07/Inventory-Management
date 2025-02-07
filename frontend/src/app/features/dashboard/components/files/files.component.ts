@@ -5,6 +5,7 @@ import { NgToastService } from 'ng-angular-popup';
 import { ZipService } from 'src/app/core/services/zip.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { CryptoService } from 'src/app/core/services/crypto.service';
 
 @Component({
   selector: 'app-files',
@@ -16,6 +17,7 @@ export class FilesComponent implements OnInit {
   selectedFiles: any = {};
   previewData: any;
   allCheckbox = false;
+  role:any;
 
   filesTableData: any;
   constructor(
@@ -24,6 +26,7 @@ export class FilesComponent implements OnInit {
     private zipService: ZipService,
     private sanitize: DomSanitizer,
     private errorHandler: ErrorHandlerService,
+    private cryptoService: CryptoService
   ) {}
 
   uploadUserFiles = new FormGroup({
@@ -31,6 +34,7 @@ export class FilesComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.role = this.cryptoService.getRole()['role']
     this.fetchUserFiles();
   }
 

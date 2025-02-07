@@ -1,0 +1,340 @@
+<div class=" d-flex flex-column">
+    <div class="row">
+      <div class="pt-3 px-3">
+        <h6>Chats</h6>
+      </div>
+    </div>
+    <div class="row">
+      <div class="container-fluid d-flex justify-content-between m-2">
+        <div>
+          <button
+            class="btn btn-sm btn-outline-dark custom-btn-1"
+            (click)="changeToInventoryComponent()"
+          >
+            View all
+          </button>
+          <button class="btn btn-sm btn-outline-dark custom-btn-3"
+            (click)="changeToCartComponent()"
+          >
+            Cart
+          </button>
+          <button class="btn btn-sm btn-outline-dark status-grey"
+          [ngClass]="role == 3 ? 'custom-btn-3' : 'custom-btn-2'" 
+          >
+            Chats
+          </button>
+          <button
+            class="btn btn-sm btn-outline-dark custom-btn-2"
+            (click)="changeToExcelFilesComponent()"
+            *ngIf="this.role == 3"
+          >
+            Files
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="row border" style="height: 72vh;">
+      <div class="col-3">
+        <button
+          class="btn btn-sm btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#newChatModal"
+        >New chat</button>
+        <button
+          class="btn btn-sm btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#createGroupChatModal"
+        >Create group</button>
+        <button
+          class="btn btn-sm btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#joinGroupChatModal"
+        >Join group</button>
+        
+        <ul class="list-group">
+          <li [ngClass]="chat.is_read == '0'?'unread':''" *ngFor="let chat of userChats" 
+              class=" btn list-group-item list-group-item-action d-flex align-items-center"
+              (click)="getChatMessages(chat.chat_name,chat.chat_id,chat.user_id,chat.purpose,chat.created_by)"
+            >
+            <!-- <p>{{chat | json}}</p> -->
+            <!-- <img [src]="chat.avatar" class="avatar me-2" /> -->
+            <div>
+              <strong>{{ chat.chat_name }}</strong>
+              <!-- <p class="small text-muted m-0">{{ chat.lastMessage }}</p> -->
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="col border" style="height: 72vh;">
+        <div *ngIf="!chatMessages" class="d-flex justify-content-center">
+          <p>Chat here!</p>
+        </div>
+        <div class="" *ngIf="chatMessages">
+          <div class="chat-header d-flex justify-content-between">
+            <!-- <p>{{curChat | json}}</p> -->
+            <p><strong>{{curChat.chat_name}}</strong></p>
+            <div>
+              <button 
+            class="btn btn-sm btn-outline-dark"
+            data-bs-toggle="modal"
+            data-bs-target="#showMembersModal"
+            *ngIf="curChat.purpose=='1'"
+            >Members</button>
+            <button
+            class="btn btn-sm btn-outline-dark"
+            *ngIf="curChat.purpose=='1' && curChat.created_by != loggedInId "
+            (click)="onLeaveGroup(curChat.chat_id)"
+            >
+            Leave
+            </button>
+            <button
+            class="btn btn-sm btn-outline-dark"
+            *ngIf="curChat.purpose=='1' && curChat.created_by == loggedInId "
+            (click)="onDeleteGroup(curChat.chat_id)"
+            >
+            Delete
+            </button>
+            </div>
+          </div>
+          <div class="chat-container d-flex flex-column border table-responsive overflow-x-hidden"style="height: 50vh;">
+            <div class="message border" [ngClass]="curChat.user_id!=msg.user_id?'left':'right'" *ngFor="let msg of chatMessages">
+              <p class="message-author" *ngIf="curChat.user_id!=msg.user_id">{{msg.username}}</p>
+              <p class="message-text">{{msg.message}}</p>
+            </div>
+          </div>
+          <div class="chat-footer border">
+            <form class="d-flex" [formGroup]="messageForm">
+              <app-custom-input
+            style="width: 100%"
+            placeholder="Message"
+            formControlName="message"
+            ></app-custom-input>
+            <button class="btn btn-sm btn-dark" (click)="onSendMessage()" [disabled]="this.messageForm.invalid">Send</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<!-------------------------- New Chat Modal -------------------------------------------->
+<div
+  class="modal modal fade"
+  id="newChatModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="newChatModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog model-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="newChatModalLabel">Select File</h1>
+      </div>
+      <div class="modal-body table-responsive overflow-x-hidden" style="max-height: 50vh;">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Users</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of allUsers">
+              <!-- <p>{{user | json}}</p> -->
+              <td>{{user.first_name}} {{user.last_name}}</td>
+              <td><button class="btn btn-sm btn-primary"
+                data-bs-dismiss="modal"
+                  (click)="onNewChat(user.username,user.user_id)"
+                >Chat</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!---------------------------- Create group chat modal ------------------------------------>
+
+<div
+  class="modal modal fade"
+  id="createGroupChatModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="createGroupChatModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog model-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="createGroupChatModalLabel">Select File</h1>
+      </div>
+      <div class="modal-body table-responsive overflow-x-hidden" style="max-height: 50vh;">
+        <form [formGroup]="createGroupForm">
+          <app-custom-input
+          placeholder="Enter group name"
+          formControlName="groupName"
+          ></app-custom-input>
+        </form>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Users</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of allUsers">
+              <!-- <p>{{user | json}}</p> -->
+              <td>{{user.first_name}} {{user.last_name}}</td>
+              <td>
+                <button class="btn btn-sm btn-primary"
+                  *ngIf="!this.groupUsers[user.user_id]"
+                  (click)="onAddGroupUser(user,user.user_id)"
+                >Select</button>
+                <button class="btn btn-sm btn-primary"
+                *ngIf="this.groupUsers[user.user_id]"
+                  (click)="onRemoveGroupUser(user.user_id)"
+                >Remove</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button
+          type="button"
+          class="btn btn-sm btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="onCloseCreateGroup()"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          data-bs-dismiss="modal"
+          [disabled]="this.createGroupForm.invalid"
+          (click)="onSubmitCreateGroup()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!---------------------------- Join group chat modal ------------------------------------>
+
+<div
+  class="modal modal fade"
+  id="joinGroupChatModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="joinGroupChatModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog model-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="joinGroupChatModalLabel">Select File</h1>
+      </div>
+      <div class="modal-body table-responsive overflow-x-hidden" style="max-height: 50vh;">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Group name</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let group of allGroups">
+              <!-- <p>{{user | json}}</p> -->
+              <td>{{group.chat_name }}</td>
+              <td><button class="btn btn-sm btn-primary"
+                data-bs-dismiss="modal"
+                (click)="joinGroup(group.chat_id,group.chat_name)"
+                >Join</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!------------------------------ Show members modal ------------------------------------>
+
+
+<div
+  class="modal modal fade"
+  id="showMembersModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="showMembersModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog model-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="showMembersModalLabel">Members in group</h1>
+      </div>
+      <div class="modal-body table-responsive overflow-x-hidden" style="max-height: 50vh;">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Users</th>
+              <th *ngIf="curChat && curChat.created_by == loggedInId">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let member of chatMembers">
+              <!-- <p>{{user | json}}</p> -->
+              <td>{{member.username}}</td>
+              <td><button class="btn btn-sm btn-primary"
+                data-bs-dismiss="modal"
+                *ngIf="curChat && curChat.created_by == loggedInId"
+                >Remove</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

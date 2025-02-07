@@ -13,6 +13,7 @@ import { CartComponent } from './components/cart/cart.component';
 import { ImportProductsComponent } from './components/import-products/import-products.component';
 import { CustomDatePipe } from 'src/app/core/pipes/custom-date.pipe';
 import { NotificationComponent } from './components/notification/notification.component';
+import { ChatComponent } from './components/chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { NotificationComponent } from './components/notification/notification.co
     CartComponent,
     ImportProductsComponent,
     CustomDatePipe,
-    NotificationComponent
+    NotificationComponent,
+    ChatComponent
   ],
   imports: [
     CommonModule,

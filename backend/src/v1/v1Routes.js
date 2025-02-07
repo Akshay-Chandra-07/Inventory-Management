@@ -8,5 +8,5 @@ router.use("/vendors", require("./vendors/vendors.routes"));
 router.use("/categories", require("./categories/categories.routes"));
 router.use("/files", require("./files/files.routes"));
 router.use("/notifications",require('./notifications/notifications.routes'));
-
+router.use("/chats",require('./chats/chats.routes'))
 module.exports = router;

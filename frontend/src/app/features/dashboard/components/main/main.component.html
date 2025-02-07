@@ -11,6 +11,9 @@
       <div *ngIf="requiredComponent == 'Files'">
         <app-import-products (toggler)="onToggle($event)" ></app-import-products>
       </div>
+      <div *ngIf="requiredComponent == 'Chats'">
+        <app-chat (toggler)="onToggle($event)" ></app-chat>
+      </div>
     </div>
     <div class="col-3 p-0 gy-3 ms-auto white-background">
       <app-files></app-files>

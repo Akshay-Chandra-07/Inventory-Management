@@ -3,6 +3,7 @@ import { FilesService } from '../../services/files.service';
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
 import { SocketService } from 'src/app/core/services/socket.service';
 import { NgToastService } from 'ng-angular-popup';
+import { CryptoService } from 'src/app/core/services/crypto.service';
 
 @Component({
   selector: 'app-import-products',
@@ -12,6 +13,7 @@ import { NgToastService } from 'ng-angular-popup';
 export class ImportProductsComponent implements OnInit {
 
   excelProductFiles:any = []
+  role : any;
 
   @Output() toggler = new EventEmitter<string>();
 
@@ -19,11 +21,13 @@ export class ImportProductsComponent implements OnInit {
     private filesService:FilesService,
     private errorHandler:ErrorHandlerService,
     private socketService:SocketService,
-    private toast:NgToastService
+    private toast:NgToastService,
+    private cryptoService:CryptoService
   ) { }
 
   ngOnInit(): void {
     this.fetchExcelProductFiles()
+    this.role = this.cryptoService.getRole()['role']
     this.socketService.onStatusUpdate().subscribe({
       next:(data:any)=>{
         this.excelProductFiles = this.excelProductFiles.map((file:any)=>{
@@ -87,6 +91,10 @@ export class ImportProductsComponent implements OnInit {
 
   changeToCartComponent(){
     this.toggler.emit("Cart")
+  }
+
+  changeToChatsComponent(){
+    this.toggler.emit("Chats")
   }
 
 }
