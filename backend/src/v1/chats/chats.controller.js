@@ -114,3 +114,20 @@ exports.deleteGroup = async (req,res,next)=>{
         return res.status(400).jos({msg:"Error deleting group"})
     }
 }
+
+exports.removeUserFromGroup = async(req,res,next)=>{
+    try{
+        await ChatsQueries.removeUserFromGroup(req.query.chatId,req.query.userId)
+        const io = getIo()
+        console.log(req.query.userId)
+        const socketId = getSocketId(parseInt(req.query.userId))
+        console.log(socketId)
+        if(socketId){
+            io.to(socketId).emit("onRemovedFromGroup",req.query.chatName)
+        }
+        return res.status(200).json({msg:"User removed"})
+    }catch(error){
+        console.log(error)
+        return res.status(400).jos({msg:"Error removing user"})
+    }
+}

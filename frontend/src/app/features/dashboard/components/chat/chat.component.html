@@ -23,6 +23,7 @@
           >
             Chats
           </button>
+          
           <button
             class="btn btn-sm btn-outline-dark custom-btn-2"
             (click)="changeToExcelFilesComponent()"
@@ -316,11 +317,11 @@
           </thead>
           <tbody>
             <tr *ngFor="let member of chatMembers">
-              <!-- <p>{{user | json}}</p> -->
               <td>{{member.username}}</td>
               <td><button class="btn btn-sm btn-primary"
                 data-bs-dismiss="modal"
                 *ngIf="curChat && curChat.created_by == loggedInId"
+                (click)="onRemoveUserFromGroup(member.chat_id,member.user_id,curChat.chat_name)"
                 >Remove</button></td>
             </tr>
           </tbody>

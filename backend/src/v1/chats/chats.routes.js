@@ -1,6 +1,5 @@
 const express = require('express')
 const { validateToken } = require('../../middleware/http_middleware/tokenValidator')
-const { validateRole } = require('../../middleware/http_middleware/roleValidator')
 const chatsController = require('./chats.controller')
 const router = express.Router()
 
@@ -14,5 +13,6 @@ router.patch('/mark-chat-as-read',validateToken,chatsController.markChatAsRead)
 router.post('/join-group',validateToken,chatsController.joinGroup)
 router.delete('/leave-group',validateToken,chatsController.leaveGroup)
 router.delete('/delete-group',validateToken,chatsController.deleteGroup)
+router.delete('/remove-user-from-group',validateToken,chatsController.removeUserFromGroup)
 
 module.exports = router

@@ -52,4 +52,8 @@ export class ChatService {
   deleteGroup(chat_id:number){
     return this._http.delete(`${this.apiUrl}/chats/delete-group?chatId=${chat_id}`)
   }
+
+  removeUserFromGroup(chat_id:number,user_id:number,chat_name:string){
+    return this._http.delete(`${this.apiUrl}/chats/remove-user-from-group?chatId=${chat_id}&userId=${user_id}&chatName=${chat_name}`)
+  }
 }

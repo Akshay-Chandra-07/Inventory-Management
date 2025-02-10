@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { InventoryService } from '../../services/inventory.service';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FilesService } from '../../services/files.service';
@@ -35,7 +35,7 @@ export class InventoryComponent implements OnInit {
   productsInCart: any;
   vendorColors: Record<string, string> = {};
   role : any;
-
+  @Input() allowedFeatures:any;
   moveToCartQuantityProducts: any;
 
   searchFilters = {
@@ -552,6 +552,12 @@ export class InventoryComponent implements OnInit {
     this.moveToCartData = {}
     this.allProductsSelected = false;
     this.toggler.emit("Chats")
+  }
+
+  changeToAccessComponent(){
+    this.moveToCartData = {}
+    this.allProductsSelected = false
+    this.toggler.emit("Access")
   }
 
   onSearch(event?: Event) {

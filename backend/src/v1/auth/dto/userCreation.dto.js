@@ -23,6 +23,9 @@ const userCreationSchema = joi.object({
   }),
   role: joi.string().required().messages({
     "string.empty": "Please select role"
+  }),
+  location: joi.string().required().messages({
+    "string.empty": "Please select role"
   })
 });
 

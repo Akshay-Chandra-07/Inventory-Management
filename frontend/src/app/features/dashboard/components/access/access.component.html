@@ -1,0 +1,86 @@
+<div class="container-fluid d-flex flex-column" style="max-height: fit-content;">
+    <div class="row">
+        <div class="container-fluid d-flex justify-content-between mt-3">
+          <div>
+            <h6>Access control</h6>
+          </div>
+        </div>
+      </div>
+    <div class="row">
+        <div class="container-fluid d-flex justify-content-between m-2">
+          <div>
+            <button class="btn btn-sm btn-outline-dark custom-btn-1"
+            (click)="changeToInventoryComponent()"
+            >
+              View all
+            </button>
+            <button
+              class="btn btn-sm btn-outline-dark custom-btn-3"
+              (click)="changeToCartComponent()"
+            >
+              Cart
+            </button>
+            <button
+              class="btn btn-sm btn-outline-dark"
+              [ngClass]="role == 3 ? 'custom-btn-3' : 'custom-btn-2'"          
+              (click)="changeToChatsComponent()"
+            >
+              Chats
+            </button>
+            <button 
+              class="btn btn-sm btn-outline-dark custom-btn-2"
+              (click)="changeToExcelFilesComponent()"
+              *ngIf="this.allowedFeatures[3]"
+            >
+              Files
+            </button>
+            <button 
+              class="btn btn-sm btn-outline-dark custom-btn-2 status-grey"
+              *ngIf="this.allowedFeatures[3]"
+            >
+              Access
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="row d-flex flex-grow-1 table-responsive" style="max-height: 60vh">
+        <table class="table">
+          <thead class="table-light border">
+            <tr class="">
+              <td class="col-2"><p class="table-head-p">User</p></td>
+              <td><p class="table-head-p">Role</p></td>
+              <td><p class="table-head-p">File upload</p></td>
+              <td><p class="table-head-p">File download</p></td>
+              <td><p class="table-head-p">Import</p></td>
+              <td><p class="table-head-p">Add product</p></td>
+              <td><p class="table-head-p">Edit product</p></td>
+              <td><p class="table-head-p">Delete product</p></td>
+              <td><p class="table-head-p">Download product</p></td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of locationUsers;let i=index" 
+            style="font-size: small;">
+                <td><strong>{{user.username}}</strong></td>
+                <td *ngIf="user.role == '3'">Admin</td>
+                <td *ngIf="user.role == '2'">Manager</td>
+                <td *ngIf="user.role == '1'">User</td>
+                <td *ngFor="let feature of allFeatures">
+                    <button
+                    class="btn btn-sm btn-primary"
+                    style="font-size: x-small;"
+                    *ngIf="user.feature_ids.includes(feature.feature_id)"
+                    (click)="onRemoveUserFeature(feature.feature_id,user.user_id,i)"
+                    >Deny</button>
+                    <button
+                    class="btn btn-sm btn-secondary"
+                    style="font-size: x-small;"
+                    *ngIf="!user.feature_ids.includes(feature.feature_id)"
+                    (click)="onAddUserFeature(feature.feature_id,user.user_id,i)"
+                    >Allow</button>
+                </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+</div>

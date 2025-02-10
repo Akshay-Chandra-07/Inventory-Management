@@ -23,6 +23,7 @@ class Products extends Model {
         unit_price: { type: "integer" },
         unit: { type: "string" },
         product_image: { type: "string" },
+        added_by: {type:"integer"}
       },
     };
   }

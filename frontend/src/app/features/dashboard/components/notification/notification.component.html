@@ -15,7 +15,6 @@
     </ul>
     <ul class="dropdown-menu px-2 overflow-x-hidden" style="width: 350px; max-height: 300px;" *ngIf="userNotifications.length>0">
         <li class="m-1 border rounded p-1" *ngFor="let data of userNotifications">
-            <p>{{data|json}}</p>
             <p class="notification-message"><b>{{data.message}}</b></p>
             <div class="d-flex justify-content-between">
                 <p class="notification-message">Received on: {{data.created_at | customDate}}</p>

@@ -33,4 +33,12 @@ export class ProfileService {
   uploadProfilePicture(file: FormData) {
     return this._http.post(`${this.apiUrl}/users/upload-profile-picture`, file);
   }
+
+  getAllowedFeatures(){
+    return this._http.get(`${this.apiUrl}/users/get-allowed-features`)
+  }
+
+  getAllFeatures(){
+    return this._http.get(`${this.apiUrl}/users/get-all-features`)
+  }
 }

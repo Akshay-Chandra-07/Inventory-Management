@@ -34,6 +34,7 @@ export class SignupComponent implements OnInit {
     email: new FormControl(''),
     role: new FormControl(''),
     password: new FormControl(''),
+    location : new FormControl('')
   });
 
   onSignUpSubmit() {
@@ -44,6 +45,7 @@ export class SignupComponent implements OnInit {
         this.signUpForm.controls.email.value!,
         this.rolesAvailable![this.signUpForm.controls.role.value!],
         this.signUpForm.controls.password.value!,
+        this.signUpForm.controls.location.value!
       )
       .pipe()
       .subscribe({

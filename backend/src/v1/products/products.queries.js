@@ -63,6 +63,7 @@ class ProductQueries {
     pageCount,
     searchValue,
     searchFilters,
+    location
   ) {
     try {
       let query = db
@@ -74,6 +75,7 @@ class ProductQueries {
           "p.quantity_in_stock",
           "p.unit",
           "p.product_image",
+          "u.location",
           "c.category_name",
           "v.vendor_name",
         )
@@ -81,7 +83,9 @@ class ProductQueries {
         .join("categories as c", "p.category_id", "c.category_id")
         .join("product_to_vendor as pv", "p.product_id", "pv.product_id")
         .join("vendors as v", "pv.vendor_id", "v.vendor_id")
+        .join("users as u","p.added_by","u.user_id")
         .where("p.status", "<>", "99")
+        .andWhere("u.location","=",location)
         .orderBy("p.product_id");
       // .offset((pageNumber - 1) * pageCount)
       // .limit(pageCount);
@@ -161,6 +165,7 @@ class ProductQueries {
     quantity,
     unit,
     vendor_id,
+    user_id
   ) {
     const trx = await db.transaction();
     try {
@@ -170,6 +175,7 @@ class ProductQueries {
         quantity_in_stock: parseInt(quantity),
         unit: unit,
         unit_price: parseInt(unit_price),
+        added_by:user_id
       });
       for (let i = 0; i < vendor_id.length; i++) {
         try {

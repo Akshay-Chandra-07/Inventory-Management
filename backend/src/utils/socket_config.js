@@ -68,5 +68,7 @@ exports.getIo = () => {
 };
 
 exports.getSocketId = (user_id) => {
+  console.log(user_id)
+  console.log(userSocketMap)
   return userSocketMap.get(user_id);
 };

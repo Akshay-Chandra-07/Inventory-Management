@@ -6,6 +6,7 @@ const {
   validateUpdateUrlSchema,
 } = require("./dto/user.dto");
 const FileQueries = require("../files/files.queries");
+const UserService = require("./user.service");
 
 exports.updateUrlToDb = async (req, res, next) => {
   const profilePictureUrl = process.env.s3_URL + req.body.url;
@@ -107,5 +108,56 @@ exports.getAllUsers = async (req,res,next)=>{
   }catch(error){
     console.log(error)
     return res.status(400).json({msg:"Error fetching users"})
+  }
+}
+
+exports.getAllowedFeatures = async (req,res,next)=>{
+  try{
+    const allowedFeatures = await userQueries.getAllowedFeatures(req.userId)
+    return res.status(200).json(allowedFeatures)
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({msg:"Error fetching features"})
+  }
+}
+
+exports.getAllFeatures = async (req,res,next)=>{
+  try{
+    const allFeatures = await userQueries.getAllFeatures()
+    return res.status(200).json(allFeatures)
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({msg:"Error fetching features"})
+  }
+}
+
+exports.getAllUsersFromLocation = async (req,res,next)=>{
+  try{
+    const userData = await userQueries.getAllUsersFromLocation(req.userId)
+    const cleanedData = await UserService.cleanUserData(userData)
+    return res.status(200).json(cleanedData)
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({msg:"Error fetching users"})
+  }
+}
+
+exports.removeUserFeature = async (req,res,next)=>{
+  try{
+    await userQueries.removeUserFeature(req.query.featureId,req.query.userId)
+    return res.status(200).json({msg:"Feature access removed"})
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({msg:"Error removing feature"})
+  }
+}
+
+exports.addUserFeature = async (req,res,next)=>{
+  try{
+    await userQueries.addUserFeature(req.body.featureId,req.body.userId)
+    return res.status(200).json({msg:"Feature access added"})
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({msg:"Error adding feature"})
   }
 }

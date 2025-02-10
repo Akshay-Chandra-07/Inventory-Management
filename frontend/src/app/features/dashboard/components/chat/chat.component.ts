@@ -65,6 +65,15 @@ export class ChatComponent implements OnInit {
         console.log(error)
       }
     })
+    this.socketService.onRemovedFromGroup().subscribe({
+      next:(data:any)=>{
+        console.log(data)
+        this.fetchUserChats()
+        this.toastService.info({detail:`You have been removed from ${data} group`,duration:2000})
+      },error:(error:Error)=>{
+        console.log(error)
+      }
+    })
   }
 
   messageForm = new FormGroup({
@@ -88,9 +97,6 @@ export class ChatComponent implements OnInit {
   }
 
   appendingMessageToChat(data:any){
-    console.log(data.message)
-    console.log(this.curChat)
-    console.log(data.message[0].chat_id)
     if(this.curChat.chat_id == data.message[0].chat_id){
       this.chatMessages.push(data.message[0])
       this.onMarkChatAsRead(data.message[0].chat_id)
@@ -253,6 +259,22 @@ export class ChatComponent implements OnInit {
         this.fetchUserChats()
         this.curChat = {}
         this.chatMessages = undefined        
+      },
+      error: (error: Error) => this.errorService.handleError(error),
+    })
+  }
+
+  onRemoveUserFromGroup(chat_id:number,user_id:number,chat_name:string){
+    this.chatService.removeUserFromGroup(chat_id,user_id,chat_name).subscribe({
+      next: (data: any) => {
+        console.log(data)
+        this.chatService.getChatMembers(chat_id).subscribe({
+          next: (data: any) => {
+            console.log(data)
+            this.chatMembers = data
+          },
+          error: (error: Error) => this.errorService.handleError(error),
+        })        
       },
       error: (error: Error) => this.errorService.handleError(error),
     })

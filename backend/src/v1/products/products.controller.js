@@ -11,6 +11,7 @@ const {
   validateDeleteProductSchema,
   validateExcelDataSchema,
 } = require("./dto/productCreation.dto");
+const userQueries = require("../users/user.queries");
 
 exports.getPageProducts = async (req, res, next) => {
   const { pageNumber, pageCount, searchValue, searchFilters } = req.query;
@@ -25,11 +26,13 @@ exports.getPageProducts = async (req, res, next) => {
     return res.status(400).json({ msg: validated.error.message });
   }
   try {
+    const location = await userQueries.getUserLocation(req.userId)
     const rawProducts = await productsQueries.getPageProducts(
       pageNumber,
       pageCount,
       searchValue,
       filters,
+      location[0].location
     );
     const cleanedProducts = await productsService.cleanProducts(
       pageNumber,
@@ -116,6 +119,7 @@ exports.insertProductData = async (req, res, next) => {
       quantity,
       unit,
       vendor_id,
+      req.userId
     );
     return res.status(201).json({ msg: "Product created", productId });
   } catch (error) {

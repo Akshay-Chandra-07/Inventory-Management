@@ -5,7 +5,7 @@
       <button
         class="col-5 btn btn-outline-dark py-1 mx-1"
         (click)="downloadZip()"
-        *ngIf="this.role == 2 || this.role == 3"
+        *ngIf="this.allowedFeatures[2]"
       >
         <small>Download</small>
       </button>
@@ -13,7 +13,7 @@
         class="col-5 btn btn-primary py-0 mx-1"
         data-bs-toggle="modal"
         data-bs-target="#fileUploadModal"
-        *ngIf="this.role == 3"
+        *ngIf="this.allowedFeatures[1]"
       >
         <small>Upload</small>
       </button>
@@ -28,7 +28,7 @@
               type="checkbox"
               [checked]="this.allCheckbox"
               (change)="onFilesAllCheckbox()"
-              *ngIf="this.role == 2 || this.role == 3"
+              *ngIf="this.allowedFeatures[2]"
             />
           </td>
           <td class="col">File name</td>
@@ -47,7 +47,7 @@
               type="checkbox"
               [checked]="this.selectedFiles[data.file_id]"
               (change)="onSelectFile(data)"
-              *ngIf="this.role == 2 || this.role == 3"
+              *ngIf="this.allowedFeatures[2]"
             />
           </td>
           <td>

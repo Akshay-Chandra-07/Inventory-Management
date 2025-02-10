@@ -1,0 +1,35 @@
+.table-head-p {
+    margin: 0;
+    font-size: x-small;
+  }
+  p {
+    margin: 0;
+    font-size: small;
+  }
+  
+  .status {
+    font-size: x-small;
+    text-align: center;
+    border-radius: 1rem;
+  }
+  
+  .status-green {
+    background-color: #c3febe;
+    color: green;
+  }
+  
+  .status-grey {
+    background-color: rgb(226, 226, 226);
+    color: rgb(54, 54, 54);
+  }
+  
+  .custom-btn-1 {
+    border-radius: 5px 0 0 5px;
+  }
+  .custom-btn-2 {
+    border-radius: 0 5px 5px 0;
+  }
+  .custom-btn-3 {
+    border-radius: 0 0 0 0;
+  }
+  

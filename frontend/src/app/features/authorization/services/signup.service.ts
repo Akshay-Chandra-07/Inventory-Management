@@ -14,6 +14,7 @@ export class SignupService {
     email: string,
     role: string,
     password: string,
+    location:string
   ) {
     return this._http.post(`${this.apiUrl}/auth/signup`, {
       first_name,
@@ -21,6 +22,7 @@ export class SignupService {
       email,
       role,
       password,
+      location
     });
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { FilesService } from '../../services/files.service';
 import { NgToastService } from 'ng-angular-popup';
@@ -18,7 +18,7 @@ export class FilesComponent implements OnInit {
   previewData: any;
   allCheckbox = false;
   role:any;
-
+  @Input() allowedFeatures:any;
   filesTableData: any;
   constructor(
     private filesService: FilesService,

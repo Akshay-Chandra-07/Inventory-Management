@@ -3,6 +3,7 @@ const Files = require("./filesModel");
 const Notifications = require("./notificationModel");
 const Messages = require("./messagesModel");
 const ChatUser = require("./chat_userModel");
+const FeatureToUser = require("./feature_to_userModel");
 
 class Users extends Model {
   static get tableName() {
@@ -26,7 +27,8 @@ class Users extends Model {
         email: { type: "string" },
         profile_url: { type: "string" },
         thumbnail: { type: "string" },
-        role : { type: "string"}
+        role: { type: "string" },
+        location: { type: "string" },
       },
     };
   }
@@ -41,30 +43,38 @@ class Users extends Model {
           to: "files.user_id",
         },
       },
-      notification : {
-        relation : Model.HasManyRelation,
-        modelClass : Notifications,
-        join : {
-          from : "users.user_id",
-          to : "notifications.user_id"
-        }
-      },
-      messages : {
+      notification: {
         relation: Model.HasManyRelation,
-        modelClass : Messages,
-        join : {
-            from: "users.user_id",
-            to: "messages.user_id"
-        }
-      },
-      chats : {
-        relation : Model.HasManyRelation,
-        modelClass : ChatUser,
-        join : {
+        modelClass: Notifications,
+        join: {
           from: "users.user_id",
-          to : "chat_user.user_id"
-        } 
-      }
+          to: "notifications.user_id",
+        },
+      },
+      messages: {
+        relation: Model.HasManyRelation,
+        modelClass: Messages,
+        join: {
+          from: "users.user_id",
+          to: "messages.user_id",
+        },
+      },
+      chats: {
+        relation: Model.HasManyRelation,
+        modelClass: ChatUser,
+        join: {
+          from: "users.user_id",
+          to: "chat_user.user_id",
+        },
+      },
+      features: {
+        relation: Model.HasManyRelation,
+        modelClass: FeatureToUser,
+        join: {
+          from: "users.user_id",
+          to: "feature_to_user.user_id",
+        },
+      },
     };
   }
 }

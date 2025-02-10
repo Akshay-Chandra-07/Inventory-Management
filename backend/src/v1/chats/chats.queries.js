@@ -184,6 +184,15 @@ class ChatsQueries {
       return error;
     }
   }
+
+  static async removeUserFromGroup(chatId,userId){
+    try{
+      return await ChatUser.query(db).delete().where("chat_id","=",chatId).andWhere("user_id","=",userId)
+    }catch(error){
+      console.log(error)
+      return error;
+    }
+  }
 }
 
 module.exports = ChatsQueries;

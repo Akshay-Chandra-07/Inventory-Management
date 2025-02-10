@@ -95,4 +95,12 @@ export class SocketService {
     })
   }
 
+  onRemovedFromGroup(){
+    return new Observable((observer)=>{
+      this.socket.on("onRemovedFromGroup",(data:any)=>{
+        observer.next(data)
+      })
+    })
+  }
+
 }

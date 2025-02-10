@@ -16,7 +16,7 @@
         <button
           class="btn btn-sm btn-outline-dark ms-1"
           (click)="downloadExcel()"
-          *ngIf="this.role == 2 || this.role == 3"
+          *ngIf="this.allowedFeatures[7]"
         >
           Download all
         </button>
@@ -24,7 +24,7 @@
           class="btn btn-sm btn-outline-dark ms-1"
           data-bs-toggle="modal"
           data-bs-target="#importFileModal"
-          *ngIf="this.role == 3"
+          *ngIf="this.allowedFeatures[3]"
         >
           Import
         </button>
@@ -32,7 +32,7 @@
           class="btn btn-sm btn-primary ms-1"
           data-bs-toggle="modal"
           data-bs-target="#addProductModal"
-          *ngIf="this.role == 3"
+          *ngIf="this.allowedFeatures[4]"
         >
           + Add product
         </button>
@@ -61,9 +61,16 @@
         <button 
           class="btn btn-sm btn-outline-dark custom-btn-2"
           (click)="changeToExcelFilesComponent()"
-          *ngIf="this.role == 3"
+          *ngIf="this.allowedFeatures[3]"
         >
           Files
+        </button>
+        <button 
+          class="btn btn-sm btn-outline-dark custom-btn-2"
+          (click)="changeToAccessComponent()"
+          *ngIf="this.allowedFeatures[3]"
+        >
+          Access
         </button>
       </div>
       <div class="col-5 d-flex mx-2">
@@ -267,7 +274,7 @@
               class="btn px-1"
               src="../../../../../assets/logos/download-logo.svg"
               (click)="onDownloadRow(data)"
-              *ngIf="this.role == 2 || this.role == 3"
+              *ngIf="this.allowedFeatures[7]"
             />
             <img
               class="btn px-1"
@@ -275,13 +282,13 @@
               data-bs-toggle="modal"
               data-bs-target="#editProductModal"
               (click)="onEditingProduct(data)"
-              *ngIf="this.role == 2 || this.role == 3"
+              *ngIf="this.allowedFeatures[5]"
             />
             <img
               class="btn px-1"
               src="../../../../../assets/logos/delete-logo.svg"
               (click)="onDeleteProduct(data.product_id)"
-              *ngIf="this.role == 3"
+              *ngIf="this.allowedFeatures[6]"
             />
           </td>
         </tr>

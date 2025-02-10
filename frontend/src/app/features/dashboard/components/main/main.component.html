@@ -3,7 +3,7 @@
   <div class="row mb-2 flex-grow-1">
     <div class="col-8 extra-width p-0 gy-3 rounded white-background">
       <div *ngIf="requiredComponent == 'Inventory'">
-        <app-inventory (toggler)="onToggle($event)"></app-inventory>
+        <app-inventory [allowedFeatures]="allowedFeatures" (toggler)="onToggle($event)"></app-inventory>
       </div>
       <div *ngIf="requiredComponent == 'Cart'">
         <app-cart (toggler)="onToggle($event)"></app-cart>
@@ -14,9 +14,12 @@
       <div *ngIf="requiredComponent == 'Chats'">
         <app-chat (toggler)="onToggle($event)" ></app-chat>
       </div>
+      <div *ngIf="requiredComponent == 'Access'" >
+        <app-access [allowedFeatures]="allowedFeatures" [allFeatures]="allFeatures" (toggler)="onToggle($event)"></app-access>
+      </div>
     </div>
     <div class="col-3 p-0 gy-3 ms-auto white-background">
-      <app-files></app-files>
+      <app-files [allowedFeatures]="allowedFeatures" ></app-files>
     </div>
   </div>
 </div>

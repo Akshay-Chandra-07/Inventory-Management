@@ -40,6 +40,20 @@
       </p>
     </li>
     <li>
+      <p *ngIf="userData" class="dropdown-item dropdown-username">
+        <span *ngIf="userData.role=='3'">
+          Admin
+        </span>
+        <span *ngIf="userData.role=='2'">
+          Manager
+        </span>
+        <span *ngIf="userData.role=='1'">
+          User
+        </span>
+        ({{userData.location}})
+      </p>
+    </li>
+    <li>
       <a
         class="dropdown-item"
         data-bs-toggle="modal"

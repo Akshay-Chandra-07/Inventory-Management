@@ -35,13 +35,15 @@ exports.register = async (req, res, next) => {
       req.body.role,
       username,
       password,
+      req.body.location
     );
-    if (createUser == true) {
+    
+    if(createUser){
       return res.status(201).json({ msg: "User created" });
     } else {
       return res.status(400).json({ msg: "Error creating user", createUser });
     }
-  }
+   }
 };
 
 exports.login = async (req, res, next) => {
@@ -99,6 +101,7 @@ exports.forgotPassword = async (req,res,next)=>{
   const bool = await authQueries.checkUser(email)
   if(bool[0].user_id){
     const reset_token = resetTokenGenerator(bool[0].user_id)
+    await authQueries.setResetToken(email,reset_token)
     const clientUrl = process.env.CLIENT_URL
     const resetLink = `${clientUrl}?token=${reset_token}&email=${email}`
     const mailDetails = {
@@ -116,10 +119,13 @@ exports.forgotPassword = async (req,res,next)=>{
 
 exports.resetPassword = async(req,res,next)=>{
   const {password,token} = req.body
-  const user_id = validateResetToken(token)
+  const user_id = await validateResetToken(token)
+  console.log(user_id)
   if(user_id){
+    console.log(user_id)
     const hashedPassword = await authService.passwordHashing(password)
     await authQueries.updateUserPassword(hashedPassword,user_id)
+    await authQueries.setRefreshToken(user_id,"")
     return res.status(200).json({msg:"Password updated successfully"})
   }
   return res.status(401).json({msg:"Cannot update password"})

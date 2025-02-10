@@ -6,7 +6,7 @@ const db = require("../../mysql/db")
 class NotificationQueries{
     static async getUserNotifications(user_id){
         try{
-            const notificationData = await Notifications.query(db).select("notification_id","user_id","message","status","created_at").where("user_id","=",user_id).andWhere("status","<>","99")
+            const notificationData = await Notifications.query(db).select("notification_id","user_id","message","status","created_at").where("user_id","=",user_id).andWhere("status","<>","99").orderBy("created_at","desc")
             return notificationData;
         }catch(error){
             console.log(error)

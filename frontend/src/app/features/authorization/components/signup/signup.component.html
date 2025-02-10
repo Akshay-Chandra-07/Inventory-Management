@@ -51,15 +51,19 @@
               [options]="['Admin','Manager','User']"
               formControlName="role"
             ></app-custom-dropdown>
-            <div>
-              <app-custom-input
-                label="Password*"
-                type="password"
-                placeholder="Create a password"
-                formControlName="password"
-                help="Must be at least 8 characters"
-              ></app-custom-input>
-            </div>
+            <app-custom-dropdown
+              label="Location*"
+              placeholder="Select location"
+              [options]="['Hyderabad','Bangalore','Chennai']"
+              formControlName="location"
+            ></app-custom-dropdown>
+            <app-custom-input
+              label="Password*"
+              type="password"
+              placeholder="Create a password"
+              formControlName="password"
+              help="Must be at least 8 characters"
+            ></app-custom-input>
             <div class="d-grid text-center">
               <button class="btn btn-primary">Create account</button>
               <p>
