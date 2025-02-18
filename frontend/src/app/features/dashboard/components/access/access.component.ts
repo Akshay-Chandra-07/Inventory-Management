@@ -10,7 +10,7 @@ import { ErrorHandlerService } from 'src/app/core/services/error-handler.service
 })
 export class AccessComponent implements OnInit {
 
-  role:any;
+  role:number | undefined;
   locationUsers:any;
   @Input() allowedFeatures:any
   @Input() allFeatures:any

@@ -36,6 +36,8 @@ class ProductsService {
     );
     const data = [paginatedProducts, cleanedProducts.length];
     return data;
+
+    
   }
 }
 

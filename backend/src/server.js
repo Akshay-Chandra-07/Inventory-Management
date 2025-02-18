@@ -5,8 +5,9 @@ const swaggerJsDoc = require('swagger-jsdoc')
 const swaggerUi = require('swagger-ui-express')
 const cron = require('node-cron');
 const socketIo = require('socket.io')
+const { insertProductToVendor } = require("./utils/temp_function")
 require("./mysql/db");
-require("./aws/s3/s3Uploader")
+// require("./aws/s3/s3Uploader")
 const {
   errorLogger,
 } = require("./middleware/error_handlers/global_error_handler");
@@ -69,6 +70,7 @@ cron.schedule('*/10 * * * * ', () => {
   excelDataProcessor();
 } );
 
+// insertProductToVendor()
 const scheduleFun = async() => {
   const result = await excelDataProcessor();
   console.log(result)

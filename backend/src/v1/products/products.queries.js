@@ -77,7 +77,7 @@ class ProductQueries {
           "p.product_image",
           "u.location",
           "c.category_name",
-          "v.vendor_name",
+          db.raw("JSON_ARRAYAGG(v.vendor_name) as vendors")
         )
         .from("products as p")
         .join("categories as c", "p.category_id", "c.category_id")
@@ -86,54 +86,73 @@ class ProductQueries {
         .join("users as u","p.added_by","u.user_id")
         .where("p.status", "<>", "99")
         .andWhere("u.location","=",location)
-        .orderBy("p.product_id");
-      // .offset((pageNumber - 1) * pageCount)
-      // .limit(pageCount);
+        .groupBy("p.product_id")
+        .orderBy("p.product_id")
+      // if (searchValue) {
+      //   query.where(function () {
+      //     this.where("p.product_name", "like", `%${searchValue}%`)
+      //       .orWhere("c.category_name", "like", `%${searchValue}%`)
+      //       .orWhere("v.vendor_name", "like", `%${searchValue}%`);
+      //   });
+      //   if (searchFilters && searchFilters.length === 1) {
+      //     if (searchFilters.includes("ProductName")) {
+      //       query.where("p.product_name", "like", `%${searchValue}%`);
+      //     }
+      //     if (searchFilters.includes("Category")) {
+      //       query.where("c.category_name", "like", `%${searchValue}%`);
+      //     }
+      //     if (searchFilters.includes("Vendor")) {
+      //       query.where("v.vendor_name", "like", `%${searchValue}%`);
+      //     }
+      //   } else if (searchFilters && searchFilters.length === 2) {
+      //     if (
+      //       searchFilters.includes("ProductName") &&
+      //       searchFilters.includes("Category")
+      //     ) {
+      //       query
+      //         .where("p.product_name", "like", `%${searchValue}%`)
+      //         .orWhere("c.category_name", "like", `%${searchValue}%`);
+      //     } else if (
+      //       searchFilters.includes("ProductName") &&
+      //       searchFilters.includes("Vendor")
+      //     ) {
+      //       query
+      //         .where("p.product_name", "like", `%${searchValue}%`)
+      //         .orWhere("v.vendor_name", "like", `%${searchValue}%`);
+      //     } else if (
+      //       searchFilters.includes("Category") &&
+      //       searchFilters.includes("Vendor")
+      //     ) {
+      //       query
+      //         .where("c.category_name", "like", `%${searchValue}%`)
+      //         .orWhere("v.vendor_name", "like", `%${searchValue}%`);
+      //     }
+      //   }
+      // }
+
       if (searchValue) {
-        query.where(function () {
-          this.where("p.product_name", "like", `%${searchValue}%`)
-            .orWhere("c.category_name", "like", `%${searchValue}%`)
-            .orWhere("v.vendor_name", "like", `%${searchValue}%`);
+        query.andWhere(function () {
+          if (!searchFilters || searchFilters.length === 0) {
+            this.where("p.product_name", "like", `%${searchValue}%`)
+              .orWhere("c.category_name", "like", `%${searchValue}%`)
+              .orWhere("v.vendor_name", "like", `%${searchValue}%`);
+          } else {
+            searchFilters.forEach((filter) => {
+              if (filter === "ProductName") {
+                this.orWhere("p.product_name", "like", `%${searchValue}%`);
+              }
+              if (filter === "Category") {
+                this.orWhere("c.category_name", "like", `%${searchValue}%`);
+              }
+              if (filter === "Vendor") {
+                this.orWhere("v.vendor_name", "like", `%${searchValue}%`);
+              }
+            });
+          }
         });
-        if (searchFilters && searchFilters.length === 1) {
-          console.log("entering in 1");
-          if (searchFilters.includes("ProductName")) {
-            query.where("p.product_name", "like", `%${searchValue}%`);
-          }
-          if (searchFilters.includes("Category")) {
-            query.where("c.category_name", "like", `%${searchValue}%`);
-          }
-          if (searchFilters.includes("Vendor")) {
-            query.where("v.vendor_name", "like", `%${searchValue}%`);
-          }
-        } else if (searchFilters && searchFilters.length === 2) {
-          console.log(searchFilters);
-          console.log(searchFilters.length);
-          console.log("entering in");
-          if (
-            searchFilters.includes("ProductName") &&
-            searchFilters.includes("Category")
-          ) {
-            query
-              .where("p.product_name", "like", `%${searchValue}%`)
-              .orWhere("c.category_name", "like", `%${searchValue}%`);
-          } else if (
-            searchFilters.includes("ProductName") &&
-            searchFilters.includes("Vendor")
-          ) {
-            query
-              .where("p.product_name", "like", `%${searchValue}%`)
-              .orWhere("v.vendor_name", "like", `%${searchValue}%`);
-          } else if (
-            searchFilters.includes("Category") &&
-            searchFilters.includes("Vendor")
-          ) {
-            query
-              .where("c.category_name", "like", `%${searchValue}%`)
-              .orWhere("v.vendor_name", "like", `%${searchValue}%`);
-          }
-        }
       }
+      query.offset((pageNumber - 1) * pageCount)
+            .limit(pageCount)
       return query;
     } catch (error) {
       return error;

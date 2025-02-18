@@ -34,14 +34,14 @@ exports.getPageProducts = async (req, res, next) => {
       filters,
       location[0].location
     );
-    const cleanedProducts = await productsService.cleanProducts(
-      pageNumber,
-      pageCount,
-      rawProducts,
-    );
+    // const cleanedProducts = await productsService.cleanProducts(
+    //   pageNumber,
+    //   pageCount,
+    //   rawProducts,
+    // );
     return res
       .status(200)
-      .json({ msg: "All products fetched", cleanedProducts });
+      .json({ msg: "All products fetched", rawProducts });
   } catch (error) {
     return res.status(400).json({ msg: "Error fetching files" });
   }

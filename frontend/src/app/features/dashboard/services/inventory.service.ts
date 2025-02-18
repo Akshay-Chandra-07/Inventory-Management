@@ -96,8 +96,7 @@ export class InventoryService {
       { url, product_id },
     );
   }
-  deleteProduct(product_id: string) {
-    console.log(product_id);
+  deleteProduct(product_id: number) {
     return this._http.patch(`${this.apiUrl}/products/delete-single-product`, {
       product_id,
     });

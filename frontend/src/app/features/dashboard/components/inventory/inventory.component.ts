@@ -23,7 +23,7 @@ export class InventoryComponent implements OnInit {
   pageCount: number = 7;
   productCount: number = 0;
   lastPage: number = 1;
-  inventoryData: any;
+  inventoryData: Array<Product> | undefined;
   moveToCartData: Record<string, Product> | undefined;
   file: any | undefined;
   selectedVendors = 0;
@@ -34,7 +34,7 @@ export class InventoryComponent implements OnInit {
   isDragging = false;
   productsInCart: any;
   vendorColors: Record<string, string> = {};
-  role : any;
+  role : number | undefined;
   @Input() allowedFeatures:any;
   moveToCartQuantityProducts: any;
 
@@ -76,11 +76,12 @@ export class InventoryComponent implements OnInit {
               console.log(searchValue, searchFilter);
               console.log('fetched');
               console.log(data);
-              this.inventoryData = data.cleanedProducts[0];
-              this.productCount = data.cleanedProducts[1];
-              this.lastPage = Math.ceil(this.productCount / this.pageCount);
-              this.generatePageNumbers();
-              this.addProductsToMoveToCart();
+              this.inventoryData = data.rawProducts;
+              // this.productCount = data.cleanedProducts[1];
+              // this.lastPage = Math.ceil(this.productCount / this.pageCount);
+              // this.generatePageNumbers();
+              // this.addProductsToMoveToCart();
+              console.log(this.inventoryData)
             },
             error: (error) => {
               this.errorHandler.handleError(error);
@@ -308,13 +309,13 @@ export class InventoryComponent implements OnInit {
     if (this.allProductsSelected) {
       const data = this.tempcartService.fetchTempcartData();
       if (!data){
-        this.inventoryData.forEach((product: any) => {
+        this.inventoryData!.forEach((product: any) => {
           if(product.quantity_in_stock > 0){
             this.tempcartService.modifyTempcart(product.product_id, product);
           }
         });
       }else{
-        this.inventoryData.forEach((product: any) => {
+        this.inventoryData!.forEach((product: any) => {
           if(!data[product.product_id])
             if(product.quantity_in_stock>0){
               this.tempcartService.modifyTempcart(product.product_id, product);
@@ -336,8 +337,8 @@ export class InventoryComponent implements OnInit {
       .subscribe({
         next: (data: any) => {
           console.log(data);
-          this.productCount = data.cleanedProducts[1];
-          this.inventoryData = data.cleanedProducts[0];
+          // this.productCount = data.cleanedProducts[1];
+          this.inventoryData = data.rawProducts;
           this.lastPage = Math.ceil(this.productCount / this.pageCount);
           this.generatePageNumbers();
           console.log(this.productCount);
@@ -507,7 +508,7 @@ export class InventoryComponent implements OnInit {
   }
 
   onChangeCheckbox(i: any, p_id: any) {
-    this.tempcartService.modifyTempcart(p_id, this.inventoryData[i]);
+    this.tempcartService.modifyTempcart(p_id, this.inventoryData![i]);
     this.onMoveToCart();
   }
 
@@ -591,7 +592,7 @@ export class InventoryComponent implements OnInit {
     console.log(this.searchFilters);
   }
 
-  onDeleteProduct(product_id: string) {
+  onDeleteProduct(product_id: number) {
     console.log(product_id);
     this.inventoryService
       .deleteProduct(product_id)

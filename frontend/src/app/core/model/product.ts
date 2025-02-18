@@ -3,6 +3,7 @@ export interface Product {
   product_name: string;
   product_image: string | null;
   unit: string;
+  unit_price?: number
   quantity_in_stock: number;
   category_name: string;
   vendors: Vendor[];
